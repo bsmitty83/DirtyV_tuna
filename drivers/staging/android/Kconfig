@@ -16,6 +16,9 @@ config ANDROID_LOGGER
 	tristate "Android log driver"
 	default n
 
+config ANDROID_PERSISTENT_RAM
+	bool
+
 config LOGCAT_SIZE
 	int "Adjust android log buffer sizes (KB) "
 	default 256
@@ -26,12 +29,13 @@ config LOGCAT_SIZE
 
 config ANDROID_RAM_CONSOLE
 	bool "Android RAM buffer console"
-	default n
+	select ANDROID_PERSISTENT_RAM
+	default 
 
 menuconfig ANDROID_RAM_CONSOLE_ERROR_CORRECTION
 	bool "Android RAM Console Enable error correction"
 	default n
-	depends on ANDROID_RAM_CONSOLE
+	depends on ANDROID_PERSISTENT_RAM
 	select REED_SOLOMON
 	select REED_SOLOMON_ENC8
 	select REED_SOLOMON_DEC8
