@@ -18,6 +18,16 @@
 #include <linux/cleancache.h>
 
 /*
+ * This global enablement flag may be read thousands of times per second
+ * by cleancache_get/put/invalidate even on systems where cleancache_ops
+ * is not claimed (e.g. cleancache is config'ed on but remains
+ * disabled), so is preferred to the slower alternative: a function
+ * call that checks a non-global.
+ */
+int cleancache_enabled;
+EXPORT_SYMBOL(cleancache_enabled);
+
+/*
  * cleancache_ops is set by cleancache_ops_register to contain the pointers
  * to the cleancache "backend" implementation functions.
  */
@@ -137,10 +147,11 @@ void __cleancache_put_page(struct page *page)
 EXPORT_SYMBOL(__cleancache_put_page);
 
 /*
- * Flush any data from cleancache associated with the poolid and the
+ * Invalidate any data from cleancache associated with the poolid and the
  * page's inode and page index so that a subsequent "get" will fail.
  */
-void __cleancache_flush_page(struct address_space *mapping, struct page *page)
+void __cleancache_invalidate_page(struct address_space *mapping,
+					struct page *page)
 {
 	/* careful... page->mapping is NULL sometimes when this is called */
 	int pool_id = mapping->host->i_sb->cleancache_poolid;
@@ -154,14 +165,14 @@ void __cleancache_flush_page(struct address_space *mapping, struct page *page)
 		}
 	}
 }
-EXPORT_SYMBOL(__cleancache_flush_page);
+EXPORT_SYMBOL(__cleancache_invalidate_page);
 
 /*
- * Flush all data from cleancache associated with the poolid and the
+ * Invalidate all data from cleancache associated with the poolid and the
  * mappings's inode so that all subsequent gets to this poolid/inode
  * will fail.
  */
-void __cleancache_flush_inode(struct address_space *mapping)
+void __cleancache_invalidate_inode(struct address_space *mapping)
 {
 	int pool_id = mapping->host->i_sb->cleancache_poolid;
 	struct cleancache_filekey key = { .u.key = { 0 } };
@@ -169,14 +180,14 @@ void __cleancache_flush_inode(struct address_space *mapping)
 	if (pool_id >= 0 && cleancache_get_key(mapping->host, &key) >= 0)
 		(*cleancache_ops.flush_inode)(pool_id, key);
 }
-EXPORT_SYMBOL(__cleancache_flush_inode);
+EXPORT_SYMBOL(__cleancache_invalidate_inode);
 
 /*
  * Called by any cleancache-enabled filesystem at time of unmount;
  * note that pool_id is surrendered and may be reutrned by a subsequent
  * cleancache_init_fs or cleancache_init_shared_fs
  */
-void __cleancache_flush_fs(struct super_block *sb)
+void __cleancache_invalidate_fs(struct super_block *sb)
 {
 	if (sb->cleancache_poolid >= 0) {
 		int old_poolid = sb->cleancache_poolid;
@@ -184,7 +195,7 @@ void __cleancache_flush_fs(struct super_block *sb)
 		(*cleancache_ops.flush_fs)(old_poolid);
 	}
 }
-EXPORT_SYMBOL(__cleancache_flush_fs);
+EXPORT_SYMBOL(__cleancache_invalidate_fs);
 
 #ifdef CONFIG_SYSFS
 
