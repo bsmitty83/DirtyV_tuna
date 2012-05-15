@@ -143,12 +143,6 @@ int swap_writepage(struct page *page, struct writeback_control *wbc)
 		unlock_page(page);
 		goto out;
 	}
-	if (frontswap_put_page(page) == 0) {
-    	set_page_writeback(page);
-    	unlock_page(page);
-    	end_page_writeback(page);
-    	goto out;
-  } 
 	ret = __swap_writepage(page, wbc);
 out:
 	return ret;
@@ -159,6 +153,12 @@ int __swap_writepage(struct page *page, struct writeback_control *wbc)
 	struct bio *bio;
 	int ret = 0, rw = WRITE;
 	struct swap_info_struct *sis = page_swap_info(page);
+	if (frontswap_store(page) == 0) {
+		set_page_writeback(page);
+		unlock_page(page);
+		end_page_writeback(page);
+		goto out;
+	}
 	bio = get_swap_bio(GFP_NOIO, page, end_swap_bio_write);
 	if (bio == NULL) {
 		set_page_dirty(page);
@@ -183,7 +183,7 @@ int swap_readpage(struct page *page)
 
 	VM_BUG_ON(!PageLocked(page));
 	VM_BUG_ON(PageUptodate(page));
-	if (frontswap_get_page(page) == 0) {
+	if (frontswap_load(page) == 0) {
 		SetPageUptodate(page);
 		unlock_page(page);
 		goto out;
