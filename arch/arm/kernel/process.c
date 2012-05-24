@@ -280,9 +280,8 @@ void machine_shutdown(void)
 	 * one of the stopped CPUs.
 	 */
 	preempt_disable();
-
-	smp_send_stop();
 #endif
+	disable_nonboot_cpus();
 }
 
 void machine_halt(void)
