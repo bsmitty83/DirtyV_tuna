@@ -33,9 +33,6 @@ extern bool fsynccontrol_fsync_enabled();
  */
 static int __sync_filesystem(struct super_block *sb, int wait)
 {
-	if (sb->s_qcop && sb->s_qcop->quota_sync)
-		sb->s_qcop->quota_sync(sb, -1);
-
 	if (wait)
 		sync_inodes_sb(sb);
 	else
