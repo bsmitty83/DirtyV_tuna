@@ -1207,6 +1207,8 @@ void writeback_inodes_sb_nr(struct super_block *sb, unsigned long nr)
 		.nr_pages		= nr,
 	};
 
+	if (sb->s_bdi == &noop_backing_dev_info)
+		return;
 	WARN_ON(!rwsem_is_locked(&sb->s_umount));
 	bdi_queue_work(sb->s_bdi, &work);
 	wait_for_completion(&done);
@@ -1286,6 +1288,9 @@ void sync_inodes_sb(struct super_block *sb)
 		.for_sync	= 1,
 	};
 
+	/* Nothing to do? */
+	if (sb->s_bdi == &noop_backing_dev_info)
+		return;
 	WARN_ON(!rwsem_is_locked(&sb->s_umount));
 
 	bdi_queue_work(sb->s_bdi, &work);
