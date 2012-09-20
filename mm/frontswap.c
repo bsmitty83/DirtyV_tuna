@@ -190,7 +190,7 @@ int __frontswap_load(struct page *page)
 	BUG_ON(sis == NULL);
 	if (frontswap_test(sis, offset))
 		ret = frontswap_ops.load(type, offset, page);
-	if (ret == 0)
+	if (ret == 0) {
 		inc_frontswap_loads();
 		if (frontswap_tmem_exclusive_gets_enabled) {
 			SetPageDirty(page);
