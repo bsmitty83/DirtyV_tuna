@@ -14,11 +14,13 @@ struct frontswap_ops {
 };
 
 extern bool frontswap_enabled;
-extern struct frontswap_ops
+extern struct frontswap_ops *
 	frontswap_register_ops(struct frontswap_ops *ops);
 extern void frontswap_shrink(unsigned long);
 extern unsigned long frontswap_curr_pages(void);
 extern void frontswap_writethrough(bool);
+#define FRONTSWAP_HAS_EXCLUSIVE_GETS
+extern void frontswap_tmem_exclusive_gets(bool);
 
 extern void __frontswap_init(unsigned type);
 extern int __frontswap_store(struct page *page);
