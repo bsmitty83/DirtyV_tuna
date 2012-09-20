@@ -48,6 +48,13 @@ EXPORT_SYMBOL(frontswap_enabled);
  */
 static bool frontswap_writethrough_enabled __read_mostly;
 
+/*
+ * If enabled, the underlying tmem implementation is capable of doing
+ * exclusive gets, so frontswap_load, on a successful tmem_get must
+ * mark the page as no longer in frontswap AND mark it dirty.
+ */
+static bool frontswap_tmem_exclusive_gets_enabled __read_mostly;
+
 #ifdef CONFIG_DEBUG_FS
 /*
  * Counters available via /sys/kernel/debug/frontswap (if debugfs is
@@ -99,6 +106,15 @@ void frontswap_writethrough(bool enable)
 	frontswap_writethrough_enabled = enable;
 }
 EXPORT_SYMBOL(frontswap_writethrough);
+
+/*
+ * Enable/disable frontswap exclusive gets (see above).
+ */
+void frontswap_tmem_exclusive_gets(bool enable)
+{
+	frontswap_tmem_exclusive_gets_enabled = enable;
+}
+EXPORT_SYMBOL(frontswap_tmem_exclusive_gets);
 
 /*
  * Called when a swap device is swapon'd.
@@ -176,6 +192,11 @@ int __frontswap_load(struct page *page)
 		ret = (*frontswap_ops.load)(type, offset, page);
 	if (ret == 0)
 		inc_frontswap_loads();
+		if (frontswap_tmem_exclusive_gets_enabled) {
+			SetPageDirty(page);
+			frontswap_clear(sis, offset);
+		}
+	}
 	return ret;
 }
 EXPORT_SYMBOL(__frontswap_load);
