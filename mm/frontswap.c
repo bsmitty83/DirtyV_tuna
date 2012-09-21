@@ -284,6 +284,11 @@ static int __frontswap_unuse_pages(unsigned long total, unsigned long *unused,
 	return ret;
 }
 
+/*
+ * Used to check if it's necessory and feasible to unuse pages.
+ * Return 1 when nothing to do, 0 when need to shink pages,
+ * error code when there is an error.
+ */
 static int __frontswap_shrink(unsigned long target_pages,
 				unsigned long *pages_to_unuse,
 				int *type)
@@ -296,7 +301,7 @@ static int __frontswap_shrink(unsigned long target_pages,
 	if (total_pages <= target_pages) {
 		/* Nothing to do */
 		*pages_to_unuse = 0;
-		return 0;
+		return 1;
 	}
 	total_pages_to_unuse = total_pages - target_pages;
 	return __frontswap_unuse_pages(total_pages_to_unuse, pages_to_unuse, type);
@@ -323,7 +328,7 @@ void frontswap_shrink(unsigned long target_pages)
 	spin_lock(&swap_lock);
 	ret = __frontswap_shrink(target_pages, &pages_to_unuse, &type);
 	spin_unlock(&swap_lock);
-	if (ret == 0 && pages_to_unuse)
+	if (ret == 0)
 		try_to_unuse(type, true, pages_to_unuse);
 	return;
 }
