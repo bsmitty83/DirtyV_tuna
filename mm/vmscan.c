@@ -1886,8 +1886,6 @@ static void get_scan_count(struct zone *zone, struct scan_control *sc,
 
 	if (scanning_global_lru(sc)) {
 		free  = zone_page_state(zone, NR_FREE_PAGES);
-		/* If we have very few page cache pages,
-		   force-scan anon pages. */
 		if (unlikely(file + free <= high_wmark_pages(zone))) {
 			/*
 			 * From now on, we have to swap out
@@ -1895,11 +1893,25 @@ static void get_scan_count(struct zone *zone, struct scan_control *sc,
 			 * we sacrifice power consumption.
 			 */
 			sc->may_writepage = 1;
+
+			/*
+			 * If we have very few page cache pages, force-scan
+			 * anon pages.
+			 */
 			fraction[0] = 1;
 			fraction[1] = 0;
 			denominator = 1;
 			nr_force_scan[0] = SWAP_CLUSTER_MAX;
 			nr_force_scan[1] = 0;
+			goto out;
+		} else if (!inactive_file_is_low_global(zone)) {
+			/*
+			 * There is enough inactive page cache, do not
+			 * reclaim anything from the working set right now.
+			 */
+			fraction[0] = 0;
+			fraction[1] = 1;
+			denominator = 1;
 			goto out;
 		}
 	}
