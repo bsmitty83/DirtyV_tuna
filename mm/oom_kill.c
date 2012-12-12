@@ -769,6 +769,4 @@ void pagefault_out_of_memory(void)
 		out_of_memory(NULL, 0, 0, NULL);
 		clear_zonelist_oom(zonelist, GFP_KERNEL);
 	}
-	if (!test_thread_flag(TIF_MEMDIE))
-		schedule_timeout_uninterruptible(1);
 }
