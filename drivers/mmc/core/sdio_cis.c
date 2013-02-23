@@ -146,6 +146,8 @@ static int cis_tpl_parse(struct mmc_card *card, struct sdio_func *func,
 static int cistpl_funce_common(struct mmc_card *card, struct sdio_func *func,
 			       const unsigned char *buf, unsigned size)
 {
+	unsigned int new_max_dtr;
+
 	/* Only valid for the common CIS (function 0) */
 	if (func)
 		return -EINVAL;
@@ -154,8 +156,9 @@ static int cistpl_funce_common(struct mmc_card *card, struct sdio_func *func,
 	card->cis.blksize = buf[1] | (buf[2] << 8);
 
 	/* TPLFE_MAX_TRAN_SPEED */
-	card->cis.max_dtr = speed_val[(buf[3] >> 3) & 15] *
-			    speed_unit[buf[3] & 7];
+	new_max_dtr = speed_val[(buf[3] >> 3) & 15] * speed_unit[buf[3] & 7];
+	if (card->cis.max_dtr > new_max_dtr)
+		card->cis.max_dtr = new_max_dtr;
 
 	return 0;
 }
