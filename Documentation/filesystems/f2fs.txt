@@ -218,6 +218,8 @@ The mkfs.f2fs is for the use of formatting a partition as the f2fs filesystem,
 which builds a basic on-disk layout.
 
 The options consist of:
+Format options
+--------------
 -l [label]   : Give a volume label, up to 512 unicode name.
 -a [0 or 1]  : Split start location of each area for heap-based allocation.
                1 is set by default, which performs this.
