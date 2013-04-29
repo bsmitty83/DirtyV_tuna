@@ -368,6 +368,16 @@ foreach my $module (keys(%modules)) {
 	my @arr = @{$objects{$module}};
 	foreach my $conf (@arr) {
 	    $configs{$conf} = $module;
+	    dprint "$conf added by direct ($module)\n";
+	    if ($debugprint) {
+		my $c=$conf;
+		$c =~ s/^CONFIG_//;
+		if (defined($depends{$c})) {
+		    dprint " deps = $depends{$c}\n";
+		} else {
+		    dprint " no deps\n";
+		}
+	    }
 	}
     } else {
 	# Most likely, someone has a custom (binary?) module loaded.
