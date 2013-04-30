@@ -1538,7 +1538,7 @@ static void zcache_frontswap_init(unsigned ignored)
 		zcache_frontswap_poolid = zcache_new_pool(TMEM_POOL_PERSIST);
 }
 
-static struct frontswap_ops zcache_frontswap_ops = {
+static struct frontswap_ops *zcache_frontswap_ops = {
 	.store = zcache_frontswap_store,
 	.load = zcache_frontswap_load,
 	.invalidate_page = zcache_frontswap_flush_page,
@@ -1546,9 +1546,9 @@ static struct frontswap_ops zcache_frontswap_ops = {
 	.init = zcache_frontswap_init
 };
 
-struct frontswap_ops zcache_frontswap_register_ops(void)
+struct frontswap_ops *zcache_frontswap_register_ops(void)
 {
-	struct frontswap_ops old_ops =
+	struct frontswap_ops *old_ops =
 		frontswap_register_ops(&zcache_frontswap_ops);
 
 	return old_ops;
@@ -1640,7 +1640,7 @@ static int __init zcache_init(void)
 #endif
 #ifdef CONFIG_FRONTSWAP
 	if (zcache_enabled && use_frontswap) {
-		struct frontswap_ops old_ops;
+		struct frontswap_ops *old_ops;
 
 		zcache_client.xvpool = xv_create_pool();
 		if (zcache_client.xvpool == NULL) {
@@ -1650,7 +1650,7 @@ static int __init zcache_init(void)
 		old_ops = zcache_frontswap_register_ops();
 		pr_info("zcache: frontswap enabled using kernel "
 			"transcendent memory and xvmalloc\n");
-		if (old_ops.init != NULL)
+		if (old_ops != NULL)
 			pr_warning("ktmem: frontswap_ops overridden");
 	}
 #endif
