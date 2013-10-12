@@ -47,10 +47,8 @@ void __init scu_enable(void __iomem *scu_base)
 #endif
 
 	scu_ctrl = __raw_readl(scu_base + SCU_CTRL);
-	/* already enabled? */
-	if (scu_ctrl & 1)
-		return;
 
+	scu_ctrl |= (1 << 3);
 	scu_ctrl |= 1;
 	__raw_writel(scu_ctrl, scu_base + SCU_CTRL);
 
