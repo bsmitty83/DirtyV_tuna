@@ -31,7 +31,7 @@
 #include "clockdomain.h"
 
 #ifdef CONFIG_CACHE_L2X0
-#define L2X0_POR_OFFSET_VALUE	0x5
+#define L2X0_POR_OFFSET_VALUE	0x3
 #define L2X0_POR_OFFSET_MASK	0x1f
 static void __iomem *l2cache_base;
 #endif
@@ -214,6 +214,9 @@ static int __init omap_l2_cache_init(void)
 	if (omap_rev() == OMAP4460_REV_ES1_1)
 		por_ctrl |= (1 << L2X0_PREFETCH_DATA_PREFETCH_SHIFT) |
 			(1 << L2X0_PREFETCH_DOUBLE_LINEFILL_SHIFT);
+	
+	por_ctrl &= ~0x1f;
+	por_ctrl |= L2X0_POR_OFFSET_VALUE;
 
 	/* Set POR through PPA service only in EMU/HS devices */
 	if (omap_type() != OMAP2_DEVICE_TYPE_GP)
