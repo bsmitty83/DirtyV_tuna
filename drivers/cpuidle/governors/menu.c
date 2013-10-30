@@ -121,6 +121,8 @@ struct menu_device {
 	int		interval_ptr;
 };
 
+bool flg_ignore_cpuidle = false;
+
 
 #define LOAD_INT(x) ((x) >> FSHIFT)
 #define LOAD_FRAC(x) LOAD_INT(((x) & (FIXED_1-1)) * 100)
@@ -302,7 +304,7 @@ static int menu_select(struct cpuidle_device *dev)
 		if (s->exit_latency * multiplier > data->predicted_us)
 			continue;
 
-		if (s->power_usage < power_usage) {
+		if (!flg_ignore_cpuidle && s->power_usage < power_usage) {
 			power_usage = s->power_usage;
 			data->last_state_idx = i;
 			data->exit_us = s->exit_latency;

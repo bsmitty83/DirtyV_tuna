@@ -21,6 +21,8 @@
 #define CPUIDLE_NAME_LEN	16
 #define CPUIDLE_DESC_LEN	32
 
+extern bool flg_ignore_cpuidle;
+
 struct cpuidle_device;
 
 
