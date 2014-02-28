@@ -306,10 +306,10 @@ config SUSPEND_TIME
 	  keeps statistics on the time spent in suspend in
 	  /sys/kernel/debug/suspend_time
 
-config SPEEDUP_KEYRESUME
-	bool "Speed up late resume"
+config QUICK_WAKEUP
+	bool "Quick wakeup"
 	depends on SUSPEND
-	default y
+	default n
 	---help---
-	  Speed up system resume
-
+	  Allow kernel driver to do periodic jobs without resuming the full system
+	  This option can increase battery life on android powered smartphone.
