@@ -48,8 +48,8 @@ void __init scu_enable(void __iomem *scu_base)
 
 	scu_ctrl = __raw_readl(scu_base + SCU_CTRL);
 
-	scu_ctrl |= (1 << 3);
 	scu_ctrl |= 1;
+	scu_ctrl |= (1 << 3);
 	__raw_writel(scu_ctrl, scu_base + SCU_CTRL);
 
 	/*
