@@ -101,7 +101,7 @@ cat << CTAG
     { SCheckBox:{
         label:"Child Runs First",
         default:`cat /proc/sys/kernel/sched_child_runs_first`,
-         action:"generic /proc/sys/kernel/sched_child_runs_first"
+        action:"generic /proc/sys/kernel/sched_child_runs_first"
     }},
     { SCheckBox:{
         label:"Tunable Scaling",

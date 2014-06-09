@@ -11,9 +11,9 @@ cat << CTAG
         action:"generic /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor",
         values:[
 `
-          for GOVERNOR in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors\`; do
-            echo "\"$GOVERNOR\",";
-          done;
+            for GOVERNOR in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors\`; do
+                echo "\"$GOVERNOR\",";
+            done;
 `
         ],
         notify:[

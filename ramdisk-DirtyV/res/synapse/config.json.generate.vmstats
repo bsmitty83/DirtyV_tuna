@@ -21,13 +21,13 @@ cat << CTAG
         action:"live vmstats 41 50"
     }},
     { SLiveLabel:{
-        action:"live vmstats 51 60"
+        action:"live vmstats 51 59"
     }},
     { SLiveLabel:{
-        action:"live vmstats 61 70"
+        action:"live vmstats 60 69"
     }},
     { SLiveLabel:{
-        action:"live vmstats 71 80"
+        action:"live vmstats 70 79"
     }}
   ]
 }
