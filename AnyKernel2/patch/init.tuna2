@@ -1,5 +1,3 @@
-service dvbootscript /sbin/dvbootscript.sh
-	class main
-	user root
-	group root
+service fsprops /fscheck setprops
+	class core
 	oneshot

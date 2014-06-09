@@ -115,6 +115,8 @@ replace_file() {
 ## AnyKernel permissions
 # set permissions for included files
 chmod -R 755 $ramdisk
+chmod 644 $ramdisk/fstab-ext4.tuna
+chmod 644 $ramdisk/fstab-f2fs.tuna
 chmod 644 $ramdisk/sbin/media_profiles.xml
 chmod 644 $ramdisk/res/synapse/*
 chmod -R 755 $ramdisk/res/synapse/actions
@@ -132,9 +134,10 @@ append_file init.rc "run-parts" init;
 
 # init.tuna.rc
 backup_file init.tuna.rc;
-insert_line init.tuna.rc "nodiratime barrier=0" "mount_all /fstab.tuna" "\tmount ext4 /dev/block/platform/omap/omap_hsmmc.0/by-name/userdata /data remount nosuid nodev noatime nodiratime barrier=0\n";
+replace_line init.tuna.rc "mount_all /fstab.tuna" "\tchmod 750 /fscheck\n\texec /fscheck mvfstab\n\tmount_all /fstab.tuna";
 append_file init.tuna.rc "fuse_usbdisk" init.tuna1;
-append_file init.tuna.rc "dvbootscript" init.tuna2;
+append_file init.tuna.rc "fsprops" init.tuna2;
+append_file init.tuna.rc "dvbootscript" init.tuna3;
 
 # init.superuser.rc
 if [ -f init.superuser.rc ]; then
@@ -147,11 +150,7 @@ else
 fi;
 
 # fstab.tuna
-backup_file fstab.tuna;
-replace_line fstab.tuna "/by-name/system" "/dev/block/platform/omap/omap_hsmmc.0/by-name/system    /system             ext4      nodev,noatime,nodiratime,barrier=0,data=writeback,noauto_da_alloc,discard    wait";
-replace_line fstab.tuna "/by-name/cache" "/dev/block/platform/omap/omap_hsmmc.0/by-name/cache     /cache              ext4      nosuid,nodev,noatime,nodiratime,errors=panic,barrier=0,nomblk_io_submit,data=writeback,noauto_da_alloc    wait,check";
-replace_line fstab.tuna "/by-name/userdata" "/dev/block/platform/omap/omap_hsmmc.0/by-name/userdata  /data               ext4      nosuid,nodev,noatime,errors=panic,nomblk_io_submit,data=writeback,noauto_da_alloc    wait,check,encryptable=/dev/block/platform/omap/omap_hsmmc.0/by-name/metadata";
-append_file fstab.tuna "usbdisk" fstab;
+rm fstab.tuna;
 
 # end ramdisk changes
 

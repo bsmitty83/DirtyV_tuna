@@ -122,6 +122,10 @@ for i in /storage/emulated/*; do
   $bb mount -o remount,nosuid,nodev,noatime,nodiratime -t auto $i/Android/obb;
 done;
 
+# workaround for hung boots with nodiratime+noatime or barrier=0+data=writeback
+# which occur when used as ext4 mount options for userdata via the tuna fstab
+$bb [ `getprop ro.fs.data` == "ext4" ] && $bb mount -o remount,nosuid,nodev,noatime,nodiratime,barrier=0 -t auto /data;
+
 # lmk tweaks for fewer empty background processes
 minfree=6144,8192,12288,16384,24576,40960;
 lmk=/sys/module/lowmemorykiller/parameters/minfree;
