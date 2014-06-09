@@ -11,9 +11,9 @@ cat << CTAG
         action:"bracket-option /sys/block/mmcblk0/queue/scheduler",
         values:[
 `
-          for IOSCHED in \`cat /sys/block/mmcblk0/queue/scheduler | sed -e 's/\]//;s/\[//'\`; do
-            echo "\"$IOSCHED\",";
-          done;
+            for IOSCHED in \`cat /sys/block/mmcblk0/queue/scheduler | sed -e 's/\]//;s/\[//'\`; do
+                echo "\"$IOSCHED\",";
+            done;
 `
         ],
         notify:[

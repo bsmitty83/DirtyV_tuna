@@ -25,7 +25,7 @@ cat << CTAG
         description:"Change the strength of vibration.",
         default:`cat /sys/vibrator/pwmvalue`,
         action:"generic /sys/vibrator/pwmvalue"
-        }},
+    }},
     { SSeekBar:{
         title:"Headphone Volume Boost", max:3,
         description:"Raise the volume of the headphone jack. Some kernels only allow 0-1.",
