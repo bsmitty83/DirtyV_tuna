@@ -753,6 +753,10 @@ int security_validate_transition(u32 oldsid, u32 newsid, u32 tasksid,
 	u16 tclass;
 	int rc = 0;
 
+	/* An empty security context is never valid. */
+	if (!scontext_len)
+		return -EINVAL;
+
 	if (!ss_initialized)
 		return 0;
 
