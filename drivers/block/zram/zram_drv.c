@@ -1023,7 +1023,7 @@ static void __exit zram_exit(void)
 		 * Shouldn't access zram->disk after destroy_device
 		 * because destroy_device already released zram->disk.
 		 */
-		zram_reset_device(zram);
+		zram_reset_device(zram, false);
 		put_disk(zram->disk);
 	}
 
