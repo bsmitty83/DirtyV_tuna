@@ -6,9 +6,9 @@ if [ -d /data/data/com.af.synapse ]; then
   SYNAPSE_DATA=/data/data/com.af.synapse/databases;
 
   [ ! -d "$SYNAPSE_BOOT_DIR" ] && mkdir -p "$SYNAPSE_BOOT_DIR";
-  [ ! -f "$SYNAPSE_BOOT_DIR/.selected_boot_img" -o -z `cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"` ] && echo "None" > "$SYNAPSE_BOOT_DIR/.selected_boot_img";
+  [ ! -f "$SYNAPSE_BOOT_DIR/.selected_boot_img" -o -z `cat "$SYNAPSE_BOOT_DIR/.selected_boot_img" 2> /dev/null` ] && echo "None" > "$SYNAPSE_BOOT_DIR/.selected_boot_img";
   [ ! -d "$SYNAPSE_CONFIG_DIR" ] && mkdir -p "$SYNAPSE_CONFIG_DIR";
-  [ ! -f "$SYNAPSE_CONFIG_DIR/.selected_config_profile" -o -z `cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"` ] && echo "None" > "$SYNAPSE_CONFIG_DIR/.selected_config_profile";
+  [ ! -f "$SYNAPSE_CONFIG_DIR/.selected_config_profile" -o -z `cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile" 2> /dev/null` ] && echo "None" > "$SYNAPSE_CONFIG_DIR/.selected_config_profile";
 
   SYNAPSE_BOOT_IMG=`cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"`;
   SYNAPSE_CONFIG_PROFILE=`cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"`;
