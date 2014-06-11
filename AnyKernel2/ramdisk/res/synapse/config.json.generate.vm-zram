@@ -45,23 +45,6 @@ cat << CTAG
         default:`cat /proc/sys/vm/dirty_writeback_centisecs`,
         action:"generic /proc/sys/vm/dirty_writeback_centisecs"
     }},
-    { SSeekBar:{
-        title:"Dirty Writeback Active Centisecs",
-        max:2500, step:50,
-        default:`cat /proc/sys/vm/dirty_writeback_active_centisecs`,
-        action:"generic /proc/sys/vm/dirty_writeback_active_centisecs"
-    }},
-    { SSeekBar:{
-        title:"Dirty Writeback Suspend Centisecs",
-        max:2500, step:50,
-        default:`cat /proc/sys/vm/dirty_writeback_suspend_centisecs`,
-        action:"generic /proc/sys/vm/dirty_writeback_suspend_centisecs"
-    }},
-    { SCheckBox:{
-        label:"Dynamic Dirty Writeback",
-        default:`cat /proc/sys/vm/dynamic_dirty_writeback`,
-        action:"generic /proc/sys/vm/dynamic_dirty_writeback"
-    }},
     { SCheckBox:{
         label:"Highmem Is Dirtyable",
         default:`cat /proc/sys/vm/highmem_is_dirtyable`,
@@ -91,7 +74,7 @@ cat << CTAG
         title:"Overcommit Memory", max:2,
         default:`cat /proc/sys/vm/overcommit_memory`,
         action:"generic /proc/sys/vm/overcommit_memory"
-        }},
+    }},
     { SSeekBar:{
         title:"Overcommit Ratio",
         max:100, unit:"%",
