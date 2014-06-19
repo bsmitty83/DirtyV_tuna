@@ -8,12 +8,7 @@ system=/dev/block/platform/*/*/by-name/system;
 device=tuna;
 
 # check partition filesystem
-# getfs() { $bb blkid $1 | $bb cut -d \" -f4; }
-# comment out and force !ext4=f2fs until we get an updated static busybox that displays fstype
-getfs() {
-  fs=`$bb blkid $1 | $bb cut -d \" -f4`;
-  [ "$fs" != "ext4" ] && echo "f2fs" || echo $fs;
-}
+getfs() { $bb blkid $1 | $bb cut -d\" -f4; }
 
 case $1 in
   mvfstab)
