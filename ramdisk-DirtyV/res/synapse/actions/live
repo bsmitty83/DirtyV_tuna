@@ -17,8 +17,9 @@ case $1 in
     fi
 
     VOLT=$(volt mpu);
+    test ${#VOLT} -gt 6 && spacer=" - " || spacer="-";
 
-    echo "Core 1: $CPUFREQONE     $VOLT@nCore 2: $CPUFREQTWO          -          $dummy";
+    echo "Core 1: $CPUFREQONE     $VOLT@nCore 2: $CPUFREQTWO         $spacer         $dummy";
   ;;
 
   temp)
