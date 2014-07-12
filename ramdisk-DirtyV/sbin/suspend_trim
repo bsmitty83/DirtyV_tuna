@@ -4,6 +4,7 @@
 # modified by osm0sis @ xda-developers.com
 
 bb=/sbin/bb/busybox
+printk() { echo "\nsuspend_trim: $(cat)" > /dev/kmsg ; }
 
 TRIMHLPFILE=/data/trimhelper
 MASTERSWITCH=$($bb cat $TRIMHLPFILE | $bb sed -n '3p')
@@ -24,10 +25,10 @@ if [ $MASTERSWITCH -eq 1 ] ; then
         $bb sleep 1
         OFFTIME=$((OFFTIME + 1))
         if [ $OFFTIME -ge 60 ] ; then
-          CURIVAVOLT=$($bb cat /sys/kernel/debug/voltage/vdd_iva/curr_vp_volt)      
+          CURIVAVOLT=$($bb cat /sys/kernel/debug/voltage/vdd_iva/curr_vp_volt)
           if [ $CURIVAVOLT -lt 925000 ] ; then
-            $bb fstrim /data
-            $bb fstrim /cache
+            $bb fstrim -v /data | printk
+            $bb fstrim -v /cache | printk
             TRIMCOUNT=$($bb cat $TRIMHLPFILE | $bb sed -n '4p')
             $bb sed -i '2s/.*/0/' $TRIMHLPFILE
             $bb sed -i "4s/.*/$((TRIMCOUNT + 1))/" $TRIMHLPFILE
