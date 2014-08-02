@@ -115,6 +115,7 @@ replace_file() {
 ## AnyKernel permissions
 # set permissions for included files
 chmod -R 755 $ramdisk
+chmod 644 $ramdisk/fstab.tuna
 chmod 644 $ramdisk/fstab-ext4.tuna
 chmod 644 $ramdisk/fstab-f2fs.tuna
 chmod 644 $ramdisk/sbin/media_profiles.xml
@@ -148,9 +149,6 @@ else
   replace_file init.superuser.rc 750 init.superuser.rc;
   insert_line init.rc "init.superuser.rc" "on post-fs-data" "    import /init.superuser.rc\n\n";
 fi;
-
-# fstab.tuna
-rm fstab.tuna;
 
 # end ramdisk changes
 
