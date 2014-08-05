@@ -135,7 +135,7 @@ append_file init.rc "run-parts" init;
 
 # init.tuna.rc
 backup_file init.tuna.rc;
-replace_line init.tuna.rc "mount_all /fstab.tuna" "\tchmod 750 /fscheck\n\texec /fscheck mvfstab\n\tmount_all /fstab.tuna";
+replace_line init.tuna.rc "mount_all /fstab.tuna" "\tchmod 750 /fscheck\n\texec /fscheck mkfstab\n\tmount_all /fstab.tuna";
 append_file init.tuna.rc "fuse_usbdisk" init.tuna1;
 append_file init.tuna.rc "fsprops" init.tuna2;
 append_file init.tuna.rc "dvbootscript" init.tuna3;
