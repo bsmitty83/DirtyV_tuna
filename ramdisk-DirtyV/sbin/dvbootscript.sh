@@ -122,10 +122,6 @@ for i in /storage/emulated/*; do
   $bb mount -o remount,nosuid,nodev,noatime,nodiratime -t auto $i/Android/obb;
 done;
 
-# workaround for hung boots with nodiratime+noatime or barrier=0+data=writeback
-# which occur when used as ext4 mount options for userdata via the tuna fstab
-$bb [ `getprop ro.fs.data` == "ext4" ] && $bb mount -o remount,nosuid,nodev,noatime,nodiratime,barrier=0 -t auto /data;
-
 # lmk tweaks for fewer empty background processes
 minfree=6144,8192,12288,16384,24576,40960;
 lmk=/sys/module/lowmemorykiller/parameters/minfree;
@@ -165,13 +161,10 @@ done&
 
 # lmk whitelist for common launchers+systemui and increase launcher priority
 list="com.android.launcher com.google.android.googlequicksearchbox org.adw.launcher org.adwfreak.launcher net.alamoapps.launcher com.anddoes.launcher com.android.lmt com.chrislacy.actionlauncher.pro com.cyanogenmod.trebuchet com.gau.go.launcherex com.gtp.nextlauncher com.miui.mihome2 com.mobint.hololauncher com.mobint.hololauncher.hd com.mycolorscreen.themer com.qihoo360.launcher com.teslacoilsw.launcher com.tsf.shell org.zeam";
-echo 1 > /sys/module/lowmemorykiller/parameters/donotkill_sysproc;
 while sleep 60; do
   for class in $list; do
     if [ `$bb pgrep $class | head -n 1` ]; then
       launcher=`$bb pgrep $class`;
-      echo "com.android.systemui,$class" > /sys/module/lowmemorykiller/parameters/donotkill_sysproc_names;
-      [ -e /sdcard/Synapse/lmk_whitelists/.sys_processes -a -z `cat /sdcard/Synapse/lmk_whitelists/.sys_processes` ] && echo "com.android.systemui\n$class" > /sdcard/Synapse/lmk_whitelists/.sys_processes;
       echo -17 > /proc/$launcher/oom_adj;
       $bb renice -18 $launcher;
     fi;

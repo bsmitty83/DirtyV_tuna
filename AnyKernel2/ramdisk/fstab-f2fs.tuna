@@ -4,10 +4,10 @@
 # specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
 
 
-/dev/block/platform/omap/omap_hsmmc.0/by-name/system    /system             f2fs      nodev,noatime,nodiratime,flush_merge,background_gc=on,inline_data,inline_xattr,active_logs=2,discard    wait
+/dev/block/platform/omap/omap_hsmmc.0/by-name/system    /system             f2fs      nodev,noatime,nodiratime,background_gc=on,discard,inline_xattr,inline_data,flush_merge,active_logs=2    wait
 /dev/block/platform/omap/omap_hsmmc.0/by-name/efs       /factory            ext4      ro                                                    wait
-/dev/block/platform/omap/omap_hsmmc.0/by-name/cache     /cache              f2fs      nosuid,nodev,noatime,nodiratime,errors=panic,flush_merge,background_gc=on,inline_data,inline_xattr,active_logs=2,discard    wait,check
-/dev/block/platform/omap/omap_hsmmc.0/by-name/userdata  /data               f2fs      nosuid,nodev,noatime,nodiratime,errors=panic,flush_merge,background_gc=on,inline_data,inline_xattr,active_logs=2,discard    wait,nonremovable,check,encryptable=/dev/block/platform/omap/omap_hsmmc.0/by-name/metadata
+/dev/block/platform/omap/omap_hsmmc.0/by-name/cache     /cache              f2fs      nosuid,nodev,noatime,nodiratime,background_gc=on,discard,inline_xattr,inline_data,flush_merge,active_logs=2    wait,check
+/dev/block/platform/omap/omap_hsmmc.0/by-name/userdata  /data               f2fs      nosuid,nodev,noatime,nodiratime,background_gc=on,discard,inline_xattr,inline_data,flush_merge,active_logs=2    wait,nonremovable,check,encryptable=/dev/block/platform/omap/omap_hsmmc.0/by-name/metadata
 /dev/block/platform/omap/omap_hsmmc.0/by-name/misc      /misc               emmc      defaults                                              defaults
 /dev/block/platform/omap/omap_hsmmc.0/by-name/boot      /boot               emmc      defaults                                              defaults
 /dev/block/platform/omap/omap_hsmmc.0/by-name/recovery  /recovery           emmc      defaults                                              defaults
