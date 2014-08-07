@@ -4,7 +4,7 @@
 # modified by osm0sis @ xda-developers.com
 
 bb=/sbin/bb/busybox
-printk() { echo "\nsuspend_trim: $(cat)" > /dev/kmsg ; }
+printk() { $bb echo -e "\nsuspend_trim: $(cat)" > /dev/kmsg ; }
 
 TRIMHLPFILE=/data/trimhelper
 MASTERSWITCH=$($bb cat $TRIMHLPFILE | $bb sed -n '3p')
