@@ -75,9 +75,11 @@ done;
 # increase sched timings
 echo 15000000 > /proc/sys/kernel/sched_latency_ns;
 echo 2000000 > /proc/sys/kernel/sched_min_granularity_ns;
-echo 3000000 > /proc/sys/kernel/sched_wakeup_granularity_ns;
+echo 2500000 > /proc/sys/kernel/sched_wakeup_granularity_ns;
+echo 962500 > /proc/sys/kernel/sched_rt_runtime_us;
 
-# adjust background app cgroup priority
+# adjust cgroup timings and decrease max realtime cpu runtime of background tasks
+echo 962500 > /dev/cpuctl/cpu.rt_runtime_us;
 echo 91 > /dev/cpuctl/apps/bg_non_interactive/cpu.shares;
 echo 400000 > /dev/cpuctl/apps/bg_non_interactive/cpu.rt_runtime_us;
 
@@ -85,7 +87,7 @@ echo 400000 > /dev/cpuctl/apps/bg_non_interactive/cpu.rt_runtime_us;
 echo 256 > /sys/kernel/mm/ksm/pages_to_scan;
 echo 1500 > /sys/kernel/mm/ksm/sleep_millisecs;
 
-# initialize timer_slack
+# initialize cgroup timer_slack for background tasks
 echo 100000000 > /dev/cpuctl/apps/bg_non_interactive/timer_slack.min_slack_ns;
 
 # decrease fs lease time
@@ -101,6 +103,9 @@ echo 0 > /proc/sys/kernel/randomize_va_space;
 # double the default minfree kb
 echo 2884 > /proc/sys/vm/min_free_kbytes;
 
+# disable swappiness by default
+echo 0 > /proc/sys/vm/swappiness
+
 # general queue tweaks
 for i in /sys/block/*/queue; do
   echo 512 > $i/nr_requests;
@@ -110,6 +115,13 @@ for i in /sys/block/*/queue; do
   echo 0 > $i/add_random;
   echo 0 > $i/rotational;
 done;
+
+# adjust f2fs ram thresholds for active partitions (favoring userdata)
+if [ -e /sys/fs/f2fs ]; then
+  echo 5 > /sys/fs/f2fs/mmcblk0p10/ram_thresh;
+  echo 5 > /sys/fs/f2fs/mmcblk0p11/ram_thresh;
+  echo 25 > /sys/fs/f2fs/mmcblk0p12/ram_thresh;
+fi;
 
 # remount sysfs+sdcard with noatime,nodiratime since that's all they accept
 $bb mount -o remount,nosuid,nodev,noatime,nodiratime -t auto /;
@@ -145,13 +157,14 @@ else
 fi;
 
 # set up Synapse support
-/sbin/uci &
+/sbin/uci&
 
-# wait for systemui and adjust some process priorities
+# wait for systemui, move it to parent task group, move ksmd to background task group and adjust systemui+kswapd priorities
 while sleep 1; do
   if [ `$bb pidof com.android.systemui` ]; then
     systemui=`$bb pidof com.android.systemui`;
     echo $systemui > /dev/cpuctl/tasks;
+    echo `$bb pgrep ksmd` > /dev/cpuctl/apps/bg_non_interactive/tasks;
     echo -17 > /proc/$systemui/oom_adj;
     $bb renice -18 $systemui;
     $bb renice 5 `$bb pgrep kswapd`;
