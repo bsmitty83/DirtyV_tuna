@@ -104,7 +104,7 @@ echo 0 > /proc/sys/kernel/randomize_va_space;
 echo 2884 > /proc/sys/vm/min_free_kbytes;
 
 # disable swappiness by default
-echo 0 > /proc/sys/vm/swappiness
+echo 0 > /proc/sys/vm/swappiness;
 
 # general queue tweaks
 for i in /sys/block/*/queue; do
@@ -116,7 +116,7 @@ for i in /sys/block/*/queue; do
   echo 0 > $i/rotational;
 done;
 
-# adjust f2fs ram thresholds for active partitions (favoring userdata)
+# adjust f2fs partition RAM thresholds to favor userdata
 if [ -e /sys/fs/f2fs ]; then
   echo 5 > /sys/fs/f2fs/mmcblk0p10/ram_thresh;
   echo 5 > /sys/fs/f2fs/mmcblk0p11/ram_thresh;

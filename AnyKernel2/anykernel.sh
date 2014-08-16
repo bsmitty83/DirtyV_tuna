@@ -169,6 +169,11 @@ fi;
 
 # end ramdisk changes
 
+# add SELinux commandline only in KitKat
+case $android_ver in
+  4.4*) cmdtmp=`cat $split_img/*-cmdline`; echo "androidboot.selinux=permissive $cmdtmp" > $split_img/*-cmdline;;
+esac;
+
 write_boot;
 
 ## end install
