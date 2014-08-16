@@ -42,20 +42,36 @@
 void __iomem *prm_base;
 void __iomem *cm_base;
 void __iomem *cm2_base;
+static u32 reset_reason;
 
 #define MAX_MODULE_ENABLE_WAIT		100000
 
 u32 omap_prcm_get_reset_sources(void)
 {
-	/* XXX This presumably needs modification for 34XX */
-	if (cpu_is_omap24xx() || cpu_is_omap34xx())
-		return omap2_prm_read_mod_reg(WKUP_MOD, OMAP2_RM_RSTST) & 0x7f;
-	if (cpu_is_omap44xx())
-		return omap2_prm_read_mod_reg(WKUP_MOD, OMAP4_RM_RSTST) & 0x7f;
-
-	return 0;
+	return reset_reason;
 }
 EXPORT_SYMBOL(omap_prcm_get_reset_sources);
+
+static int __init omap_prcm_store_and_clear_reset_sources(void)
+{
+	/* XXX This presumably needs modification for 34XX */
+	if (cpu_is_omap24xx() || cpu_is_omap34xx()) {
+		reset_reason =
+			omap2_prm_read_mod_reg(WKUP_MOD, OMAP2_RM_RSTST) & 0x7f;
+		/* clear reset reason register */
+		omap2_prm_write_mod_reg(reset_reason, WKUP_MOD, OMAP2_RM_RSTST);
+	} else if (cpu_is_omap44xx()) {
+		reset_reason =
+			omap4_prm_read_inst_reg(OMAP4430_PRM_DEVICE_INST,
+						OMAP4_PRM_RSTST_OFFSET) & 0x7ff;
+		/* clear reset reason register */
+		omap4_prm_write_inst_reg(reset_reason,
+					 OMAP4430_PRM_DEVICE_INST,
+					 OMAP4_PRM_RSTST_OFFSET);
+	}
+	return 0;
+}
+pure_initcall(omap_prcm_store_and_clear_reset_sources);
 
 /* Resets clock rates and reboots the system. Only called from system.h */
 static void omap_prcm_arch_reset(char mode, const char *cmd)
