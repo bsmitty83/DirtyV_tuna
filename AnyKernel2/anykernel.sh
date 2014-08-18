@@ -115,7 +115,6 @@ replace_file() {
 ## AnyKernel permissions
 # set permissions for included files
 chmod -R 755 $ramdisk
-chmod 644 $ramdisk/fstab.tuna
 chmod 644 $ramdisk/fstab-ext4.tuna
 chmod 644 $ramdisk/fstab-f2fs.tuna
 chmod 644 $ramdisk/sbin/media_profiles.xml
@@ -128,21 +127,6 @@ dump_boot;
 
 # begin ramdisk changes
 
-# fstab-*.tuna (backward compatibility for Unified f2fs/ext4 support)
-android_ver=$(mount /system; grep "^ro.build.version.release" /system/build.prop | cut -d= -f2; umount /system);
-case $android_ver in
-  4.2*)
-    for i in fstab-*; do
-      filetmp=`cat $i`; echo "$filetmp" | grep -viE "misc|boot|recovery|sbl|xloader|radio|usb" > $i;
-    done;
-  ;;
-  4.3*)
-    for i in fstab-*; do
-      replace_string $i "/storage/usbdisk" "musb-hdrc          auto                auto" "musb-hdrc          /storage/usbdisk    vfat";
-    done;
-  ;;
-esac;
-
 # init.rc
 backup_file init.rc;
 replace_string init.rc "cpuctl cpu,timer_slack" "mount cgroup none /dev/cpuctl cpu" "mount cgroup none /dev/cpuctl cpu,timer_slack";
@@ -151,11 +135,8 @@ append_file init.rc "run-parts" init;
 # init.tuna.rc
 backup_file init.tuna.rc;
 replace_line init.tuna.rc "mount_all /fstab.tuna" "\tchmod 750 /fscheck\n\texec /fscheck mkfstab\n\tmount_all /fstab.tuna";
-case $android_ver in
-  4.4*) append_file init.tuna.rc "fuse_usbdisk" init.tuna1;;
-esac;
-append_file init.tuna.rc "fsprops" init.tuna2;
-append_file init.tuna.rc "dvbootscript" init.tuna3;
+append_file init.tuna.rc "fsprops" init.tuna1;
+append_file init.tuna.rc "dvbootscript" init.tuna2;
 
 # init.superuser.rc
 if [ -f init.superuser.rc ]; then
@@ -170,6 +151,7 @@ fi;
 # end ramdisk changes
 
 # add SELinux commandline only in KitKat
+android_ver=$(mount /system; grep "^ro.build.version.release" /system/build.prop | cut -d= -f2; umount /system);
 case $android_ver in
   4.4*) cmdtmp=`cat $split_img/*-cmdline`; echo "androidboot.selinux=permissive $cmdtmp" > $split_img/*-cmdline;;
 esac;
