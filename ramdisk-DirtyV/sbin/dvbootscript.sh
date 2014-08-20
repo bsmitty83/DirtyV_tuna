@@ -145,12 +145,13 @@ fi;
 # set up Synapse support
 /sbin/uci&
 
-# wait for systemui, move it to parent task group, move ksmd to background task group and adjust systemui+kswapd priorities
+# wait for systemui, move it to parent task group, move ksmd to background task group then enable, and adjust systemui+kswapd priorities
 while sleep 1; do
   if [ `$bb pidof com.android.systemui` ]; then
     systemui=`$bb pidof com.android.systemui`;
     echo $systemui > /dev/cpuctl/tasks;
     echo `$bb pgrep ksmd` > /dev/cpuctl/apps/bg_non_interactive/tasks;
+    echo 1 > /sys/kernel/mm/ksm/run;
     echo -17 > /proc/$systemui/oom_adj;
     $bb renice -18 $systemui;
     $bb renice 5 `$bb pgrep kswapd`;
