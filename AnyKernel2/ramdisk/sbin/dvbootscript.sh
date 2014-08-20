@@ -4,8 +4,15 @@
 # custom busybox installation shortcut
 bb=/sbin/bb/busybox;
 
-# disable sysctl.conf to prevent ROM interference with tunables
+# create and set permissions for /system/etc/init.d if it doesn't already exist
 $bb mount -o rw,remount /system;
+if [ ! -e /system/etc/init.d ]; then
+  mkdir /system/etc/init.d;
+  chown -R root.root /system/etc/init.d;
+  chmod -R 755 /system/etc/init.d;
+fi;
+
+# disable sysctl.conf to prevent ROM interference with tunables
 $bb [ -e /system/etc/sysctl.conf ] && $bb mv -f /system/etc/sysctl.conf /system/etc/sysctl.conf.dvbak;
 
 # disable the PowerHAL since there is now a kernel-side touch boost implemented
@@ -18,39 +25,18 @@ $bb cp -f /sbin/hostapd /system/bin/;
 chown root.shell /system/bin/hostapd;
 chmod 755 /system/bin/hostapd;
 
-# backup and replace Media Codec Profiles if on SR builds, restore if not, and push init.d script for other kernels
+# backup and replace Media Codec Profiles if on SR builds, restore if not, and push init.d script to revert for other kernels
 case `uname -r` in
   *DirtyV-SR)
     $bb [ -e /system/etc/media_profiles.xml.dvbak ] || $bb cp /system/etc/media_profiles.xml /system/etc/media_profiles.xml.dvbak;
     $bb cp -f /sbin/media_profiles.xml /system/etc/;
-    chmod 644 /system/etc/media_profiles.xml;;
   *)
-    $bb [ -e /system/etc/media_profiles.xml.dvbak ] && $bb mv -f /system/etc/media_profiles.xml.dvbak /system/etc/media_profiles.xml;
-    chmod 644 /system/etc/media_profiles.xml;;
+    $bb [ -e /system/etc/media_profiles.xml.dvbak ] && $bb mv -f /system/etc/media_profiles.xml.dvbak /system/etc/media_profiles.xml;;
 esac;
+chmod 644 /system/etc/media_profiles.xml;
 $bb cp -f /sbin/dvmediarevert /system/etc/init.d/;
 chmod 755 /system/etc/init.d/dvmediarevert;
-
-# create and set permissions for /system/etc/init.d if it doesn't already exist
-if [ ! -e /system/etc/init.d ]; then
-  mkdir /system/etc/init.d;
-  chown -R root.root /system/etc/init.d;
-  chmod -R 755 /system/etc/init.d;
-fi;
 $bb mount -o ro,remount /system;
-
-# fix permissions for any included governors (and older underlying ramdisks)
-governor=reset;
-while sleep 1; do
-  current=`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`;
-  if [ $governor != $current ]; then
-    governor=$current;
-    for i in /sys/devices/system/cpu/cpufreq/*; do
-      chown system:system $i/*;
-      chmod 664 $i/*;
-    done;
-  fi;
-done&
 
 # disable debugging
 echo 0 > /sys/module/wakelock/parameters/debug_mask;
@@ -104,7 +90,7 @@ echo 0 > /proc/sys/kernel/randomize_va_space;
 echo 2884 > /proc/sys/vm/min_free_kbytes;
 
 # disable swappiness by default
-echo 0 > /proc/sys/vm/swappiness
+echo 0 > /proc/sys/vm/swappiness;
 
 # general queue tweaks
 for i in /sys/block/*/queue; do
@@ -116,7 +102,7 @@ for i in /sys/block/*/queue; do
   echo 0 > $i/rotational;
 done;
 
-# adjust f2fs ram thresholds for active partitions (favoring userdata)
+# adjust f2fs partition RAM thresholds to favor userdata
 if [ -e /sys/fs/f2fs ]; then
   echo 5 > /sys/fs/f2fs/mmcblk0p10/ram_thresh;
   echo 5 > /sys/fs/f2fs/mmcblk0p11/ram_thresh;
