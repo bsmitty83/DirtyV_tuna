@@ -1,3 +1,0 @@
-service fsprops /fscheck setprops
-	class core
-	oneshot
