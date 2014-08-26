@@ -35,7 +35,9 @@ case $1 in
     IVAFREQ=$(freq 0 iva);
     IVOLT=$(volt iva);
 
-    echo "GPU: $GPUFREQ      $CVOLT@nIVA: $IVAFREQ        $IVOLT ";
+    test ${#CVOLT} -gt 6 && spacer="  " || spacer="";
+
+    echo "GPU: $GPUFREQ      $CVOLT@n    IVA: $IVAFREQ   $spacer   $IVOLT  $dummy";
   ;;
 
   entropy)

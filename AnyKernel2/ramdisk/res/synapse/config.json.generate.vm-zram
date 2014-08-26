@@ -50,6 +50,11 @@ cat << CTAG
         default:`cat /proc/sys/vm/highmem_is_dirtyable`,
         action:"generic /proc/sys/vm/highmem_is_dirtyable"
     }},
+    { SCheckBox:{
+        label:"Laptop Mode",
+        default:`cat /proc/sys/vm/laptop_mode`,
+        action:"generic /proc/sys/vm/laptop_mode"
+    }},
     { STitleBar:{
         title:"Free Memory"
     }},
