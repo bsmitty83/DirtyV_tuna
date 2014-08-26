@@ -4,6 +4,13 @@
 # custom busybox installation shortcut
 bb=/sbin/bb/busybox;
 
+# ensure SuperSU daemonsu/Superuser su_daemon service is running
+if [ -e /system/xbin/daemonsu ]; then
+  /system/xbin/daemonsu --auto-daemon&
+elif [ ! -e /init.superuser.rc ]; then
+  /system/xbin/su --daemon&
+fi;
+
 # create and set permissions for /system/etc/init.d if it doesn't already exist
 $bb mount -o rw,remount /system;
 if [ ! -e /system/etc/init.d ]; then
@@ -29,7 +36,7 @@ chmod 755 /system/bin/hostapd;
 case `uname -r` in
   *DirtyV-SR)
     $bb [ -e /system/etc/media_profiles.xml.dvbak ] || $bb cp /system/etc/media_profiles.xml /system/etc/media_profiles.xml.dvbak;
-    $bb cp -f /sbin/media_profiles.xml /system/etc/;
+    $bb cp -f /sbin/media_profiles.xml /system/etc/;;
   *)
     $bb [ -e /system/etc/media_profiles.xml.dvbak ] && $bb mv -f /system/etc/media_profiles.xml.dvbak /system/etc/media_profiles.xml;;
 esac;
@@ -120,6 +127,13 @@ for i in /storage/emulated/*; do
   $bb mount -o remount,nosuid,nodev,noatime,nodiratime -t auto $i/Android/obb;
 done;
 
+# workaround for hung boots with nodiratime+noatime or barrier=0+data=writeback on ext4, and with
+# inline_data, flush_merge, or active_logs=2 on f2fs for userdata via the fstab on older Android versions
+case `getprop ro.fs.data` in
+  ext4) $bb mount -o remount,nosuid,nodev,noatime,nodiratime,barrier=0 -t auto /data;;
+  f2fs) $bb mount -o remount,nosuid,nodev,noatime,nodiratime,inline_data,flush_merge,active_logs=2 -t auto /data;;
+esac;
+
 # lmk tweaks for fewer empty background processes
 minfree=6144,8192,12288,16384,24576,40960;
 lmk=/sys/module/lowmemorykiller/parameters/minfree;
@@ -147,7 +161,7 @@ fi;
 
 # wait for systemui, move it to parent task group, move ksmd to background task group then enable, and adjust systemui+kswapd priorities
 while sleep 1; do
-  if [ `$bb pidof com.android.systemui` ]; then
+  if [ "$($bb pidof com.android.systemui)" ]; then
     systemui=`$bb pidof com.android.systemui`;
     echo $systemui > /dev/cpuctl/tasks;
     echo `$bb pgrep ksmd` > /dev/cpuctl/apps/bg_non_interactive/tasks;
@@ -163,10 +177,11 @@ done&
 list="com.android.launcher com.google.android.googlequicksearchbox org.adw.launcher org.adwfreak.launcher net.alamoapps.launcher com.anddoes.launcher com.android.lmt com.chrislacy.actionlauncher.pro com.cyanogenmod.trebuchet com.gau.go.launcherex com.gtp.nextlauncher com.miui.mihome2 com.mobint.hololauncher com.mobint.hololauncher.hd com.mycolorscreen.themer com.qihoo360.launcher com.teslacoilsw.launcher com.tsf.shell org.zeam";
 while sleep 60; do
   for class in $list; do
-    if [ `$bb pgrep $class | head -n 1` ]; then
-      launcher=`$bb pgrep $class`;
-      echo -17 > /proc/$launcher/oom_adj;
-      $bb renice -18 $launcher;
+    if [ "$($bb pgrep $class)" ]; then
+      for launcher in `$bb pgrep $class`; do
+        echo -17 > /proc/$launcher/oom_adj;
+        $bb renice -18 $launcher;
+      done;
     fi;
   done;
   exit;

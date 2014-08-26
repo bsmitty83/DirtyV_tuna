@@ -56,7 +56,7 @@ write_boot() {
     dtb="--dt $split_img/$dtb";
   fi;
   cd $ramdisk;
-  find . | cpio -o -H newc | gzip > /tmp/anykernel/ramdisk-new.cpio.gz;
+  find . | cpio -H newc -o | gzip > /tmp/anykernel/ramdisk-new.cpio.gz;
   $bin/mkbootimg --kernel /tmp/anykernel/zImage --ramdisk /tmp/anykernel/ramdisk-new.cpio.gz $second --cmdline "$cmdline" --board "$board" --base $base --pagesize $pagesize --kernel_offset $kerneloff --ramdisk_offset $ramdiskoff $secondoff --tags_offset $tagsoff $dtb --output /tmp/anykernel/boot-new.img;
   dd if=/tmp/anykernel/boot-new.img of=$block;
 }
@@ -137,16 +137,6 @@ backup_file init.tuna.rc;
 replace_line init.tuna.rc "mount_all /fstab.tuna" "\tchmod 750 /fscheck\n\texec /fscheck mkfstab\n\tmount_all /fstab.tuna";
 append_file init.tuna.rc "fsprops" init.tuna1;
 append_file init.tuna.rc "dvbootscript" init.tuna2;
-
-# init.superuser.rc
-if [ -f init.superuser.rc ]; then
-  backup_file init.superuser.rc;
-  replace_string init.superuser.rc "Superuser su_daemon" "# su daemon" "\n# Superuser su_daemon";
-  prepend_file init.superuser.rc "SuperSU daemonsu" init.superuser;
-else
-  replace_file init.superuser.rc 750 init.superuser.rc;
-  insert_line init.rc "init.superuser.rc" "on post-fs-data" "    import /init.superuser.rc\n\n";
-fi;
 
 # end ramdisk changes
 
