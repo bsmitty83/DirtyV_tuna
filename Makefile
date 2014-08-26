@@ -256,7 +256,8 @@ ifdef CCONFIG_CC_OPTIMIZE_O3
 else
  HOSTCFLAGS   = -Wall -W -Wmissing-prototypes -Wno-sign-compare -Wstrict-prototypes -Wno-unused-parameter -Wno-missing-field-initializers -O2 -fno-delete-null-pointer-checks
  HOSTCXXFLAGS = -O2 -Wall -W -fno-delete-null-pointer-checks
-endif
+endif 
+
 # Decide whether to build built-in, modular, or both.
 # Normally, just do built-in.
 
@@ -399,8 +400,13 @@ KBUILD_CFLAGS := -ffast-math -fno-trapping-math -fno-signed-zeros
 endif
 
 ifdef CONFIG_CC_GRAPHITE_OPTIMIZATION
-KBUILD_CFLAGS        += -fgraphite-identity -floop-parallelize-all -floop-interchange -floop-strip-mine \		
-			-ftree-loop-distribution      
+KBUILD_CFLAGS  += -fgraphite-identity -floop-parallelize-all -floop-interchange -floop-strip-mine \		
+		  -ftree-loop-distribution      
+
+HOSTCFLAGS =    -Wall -Wmissing-prototypes -Wstrict-prototypes -O3 -fomit-frame-pointer -fgcse-las -fgraphite -floop-flatten \
+	        -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
+HOSTCXXFLAGS =  -O3 -fgcse-las -fgraphite -floop-flatten -floop-parallelize-all -ftree-loop-linear -floop-interchange \
+	        -floop-strip-mine -floop-block
 endif
 
 ifdef CONFIG_CC_LINK_TIME_OPTIMIZATION
