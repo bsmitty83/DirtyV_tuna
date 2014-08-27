@@ -7,7 +7,7 @@
 /dev/block/platform/omap/omap_hsmmc.0/by-name/system    /system             ext4      nodev,noatime,nodiratime,barrier=0,data=writeback,noauto_da_alloc,discard    wait
 /dev/block/platform/omap/omap_hsmmc.0/by-name/efs       /factory            ext4      ro                                                    wait
 /dev/block/platform/omap/omap_hsmmc.0/by-name/cache     /cache              ext4      nosuid,nodev,noatime,nodiratime,errors=panic,barrier=0,nomblk_io_submit,data=writeback,noauto_da_alloc    wait,check
-/dev/block/platform/omap/omap_hsmmc.0/by-name/userdata  /data               ext4      nosuid,nodev,noatime,errors=panic,nomblk_io_submit,data=writeback,noauto_da_alloc    wait,nonremovable,check,encryptable=/dev/block/platform/omap/omap_hsmmc.0/by-name/metadata
+/dev/block/platform/omap/omap_hsmmc.0/by-name/userdata  /data               ext4      nosuid,nodev,noatime,errors=panic,nomblk_io_submit,data=writeback    wait,nonremovable,check,encryptable=/dev/block/platform/omap/omap_hsmmc.0/by-name/metadata
 /dev/block/platform/omap/omap_hsmmc.0/by-name/misc      /misc               emmc      defaults                                              defaults
 /dev/block/platform/omap/omap_hsmmc.0/by-name/boot      /boot               emmc      defaults                                              defaults
 /dev/block/platform/omap/omap_hsmmc.0/by-name/recovery  /recovery           emmc      defaults                                              defaults

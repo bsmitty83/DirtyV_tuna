@@ -127,10 +127,10 @@ for i in /storage/emulated/*; do
   $bb mount -o remount,nosuid,nodev,noatime,nodiratime -t auto $i/Android/obb;
 done;
 
-# workaround for hung boots with nodiratime+noatime or barrier=0+data=writeback on ext4, and with
-# inline_data, flush_merge, or active_logs=2 on f2fs for userdata via the fstab on older Android versions
+# workaround for hung boots with nodiratime+noatime, barrier=0+data=writeback or noauto_da_alloc on ext4, and
+# with inline_data, flush_merge, or active_logs=2 on f2fs for userdata via the fstab on older init binaries
 case `getprop ro.fs.data` in
-  ext4) $bb mount -o remount,nosuid,nodev,noatime,nodiratime,barrier=0 -t auto /data;;
+  ext4) $bb mount -o remount,nosuid,nodev,noatime,nodiratime,barrier=0,noauto_da_alloc -t auto /data;;
   f2fs) $bb mount -o remount,nosuid,nodev,noatime,nodiratime,inline_data,flush_merge,active_logs=2 -t auto /data;;
 esac;
 
