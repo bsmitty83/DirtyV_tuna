@@ -4,8 +4,9 @@
 ## AnyKernel setup
 # EDIFY properties
 kernel.string=DirtyV by bsmitty83 @ xda-developers
-do.initd=1
 do.devicecheck=1
+do.initd=1
+do.modules=0
 do.cleanup=1
 device.name1=maguro
 device.name2=toro
@@ -28,15 +29,22 @@ cd $ramdisk;
 chmod -R 755 $bin;
 mkdir -p $split_img;
 
+OUTFD=`ps | grep -v "grep" | grep -o -E "update(.*)" | cut -d" " -f3`;
+ui_print() { echo "ui_print $1" >&$OUTFD; echo "ui_print" >&$OUTFD; }
+
 # dump boot and extract ramdisk
 dump_boot() {
   dd if=$block of=/tmp/anykernel/boot.img;
   $bin/unpackbootimg -i /tmp/anykernel/boot.img -o $split_img;
+  if [ $? != 0 ]; then
+    ui_print " "; ui_print "Dumping/unpacking image failed. Aborting...";
+    echo 1 > /tmp/anykernel/exitcode; exit;
+  fi;
   gunzip -c $split_img/boot.img-ramdisk.gz | cpio -i;
 }
 
 # repack ramdisk then build and write image
-write_boot() { 
+write_boot() {
   cd $split_img;
   cmdline=`cat *-cmdline`;
   board=`cat *-board`;
@@ -58,6 +66,10 @@ write_boot() {
   cd $ramdisk;
   find . | cpio -H newc -o | gzip > /tmp/anykernel/ramdisk-new.cpio.gz;
   $bin/mkbootimg --kernel /tmp/anykernel/zImage --ramdisk /tmp/anykernel/ramdisk-new.cpio.gz $second --cmdline "$cmdline" --board "$board" --base $base --pagesize $pagesize --kernel_offset $kerneloff --ramdisk_offset $ramdiskoff $secondoff --tags_offset $tagsoff $dtb --output /tmp/anykernel/boot-new.img;
+  if [ $? != 0 -o `wc -c < /tmp/anykernel/boot-new.img` -gt `wc -c < /tmp/anykernel/boot.img` ]; then
+    ui_print " "; ui_print "Repacking image failed. Aborting...";
+    echo 1 > /tmp/anykernel/exitcode; exit;
+  fi;
   dd if=/tmp/anykernel/boot-new.img of=$block;
 }
 
@@ -71,11 +83,15 @@ replace_string() {
   fi;
 }
 
-# insert_line <file> <if search string> <line before string> <inserted line>
+# insert_line <file> <if search string> <before/after> <line match string> <inserted line>
 insert_line() {
   if [ -z "$(grep "$2" $1)" ]; then
-    line=$((`grep -n "$3" $1 | cut -d: -f1` + 1));
-    sed -i $line"s;^;${4};" $1;
+    case $3 in
+      before) offset=0;;
+      after) offset=1;;
+    esac;
+    line=$((`grep -n "$4" $1 | cut -d: -f1` + offset));
+    sed -i "${line}s;^;${5};" $1;
   fi;
 }
 
@@ -83,7 +99,15 @@ insert_line() {
 replace_line() {
   if [ ! -z "$(grep "$2" $1)" ]; then
     line=`grep -n "$2" $1 | cut -d: -f1`;
-    sed -i $line"s;.*;${3};" $1;
+    sed -i "${line}s;.*;${3};" $1;
+  fi;
+}
+
+# remove_line <file> <line match string>
+remove_line() {
+  if [ ! -z "$(grep "$2" $1)" ]; then
+    line=`grep -n "$2" $1 | cut -d: -f1`;
+    sed -i "${line}d" $1;
   fi;
 }
 
@@ -121,7 +145,6 @@ chmod 644 $ramdisk/sbin/media_profiles.xml
 chmod 644 $ramdisk/res/synapse/*
 chmod -R 755 $ramdisk/res/synapse/actions
 
-
 ## AnyKernel install
 dump_boot;
 
@@ -134,7 +157,7 @@ append_file init.rc "run-parts" init;
 
 # init.tuna.rc
 backup_file init.tuna.rc;
-replace_line init.tuna.rc "mount_all /fstab.tuna" "\tchmod 750 /fscheck\n\texec /fscheck mkfstab\n\tmount_all /fstab.tuna";
+insert_line init.tuna.rc "exec /fscheck" before "mount_all /fstab.tuna" "\tchmod 750 /fscheck\n\texec /fscheck mkfstab\n";
 append_file init.tuna.rc "fsprops" init.tuna1;
 append_file init.tuna.rc "dvbootscript" init.tuna2;
 
