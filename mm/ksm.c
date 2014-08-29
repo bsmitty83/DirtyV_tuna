@@ -195,7 +195,6 @@ static struct hlist_head mm_slots_hash[MM_SLOTS_HASH_HEADS];
 static LIST_HEAD(migrate_nodes);
 
 #define MM_SLOTS_HASH_BITS 10
-static DEFINE_HASHTABLE(mm_slots_hash, MM_SLOTS_HASH_BITS);
 
 static struct mm_slot ksm_mm_head = {
 	.mm_list = LIST_HEAD_INIT(ksm_mm_head.mm_list),

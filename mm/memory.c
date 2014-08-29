@@ -1573,8 +1573,6 @@ split_fallthrough:
 		migration_entry_wait(mm, pmd, address);
 		goto split_fallthrough;
 	}
-	if ((flags & FOLL_NUMA) && pte_numa(pte))
-		goto no_page;
 	if ((flags & FOLL_WRITE) && !pte_write(pte))
 		goto unlock;
 
