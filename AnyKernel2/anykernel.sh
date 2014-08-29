@@ -149,23 +149,25 @@ chmod -R 755 $ramdisk/res/synapse/actions
 ## AnyKernel install
 
 # MultiV custom zImage variant swap script
-zipname=$(basename `ps -w | grep -v "grep" | grep -oE "update(.*)" | cut -d" " -f4-`);
-ui_print " ";
-case $zipname in
-  DirtyV-SR-*) variant=DirtyV-SR;;
-     DirtyV-*) variant=DirtyV;;
-    SmittyV-*) variant=SmittyV;;
-     MultiV-*) ui_print "No variant chosen! Rename zip from MultiV-";;
-    sideload*) ui_print "Zip cannot be sideloaded! Rename zip";;
-            *) ui_print "Invalid choice of variant! Rename zip";;
-esac;
-if [ ! "$variant" ]; then
-  ui_print "to DirtyV-, DirtyV-SR- or SmittyV- and flash again.";
+if [ ! -e /tmp/anykernel/zImage ]; then
+  zipname=$(basename `ps -w | grep -v "grep" | grep -oE "update(.*)" | cut -d" " -f4-`);
   ui_print " ";
-  echo 1 > /tmp/anykernel/exitcode; exit;
-else
-  ui_print "$variant zImage selected!";
-  mv /tmp/anykernel/$variant /tmp/anykernel/zImage;
+  case $zipname in
+    DirtyV-SR-*) variant=DirtyV-SR;;
+       DirtyV-*) variant=DirtyV;;
+      SmittyV-*) variant=SmittyV;;
+       MultiV-*) ui_print "No variant chosen! Rename zip from MultiV-";;
+      sideload*) ui_print "Zip cannot be sideloaded! Rename zip";;
+              *) ui_print "Invalid choice of variant! Rename zip";;
+  esac;
+  if [ ! "$variant" ]; then
+    ui_print "to DirtyV-, DirtyV-SR- or SmittyV- and flash again.";
+    ui_print " ";
+    echo 1 > /tmp/anykernel/exitcode; exit;
+  else
+    ui_print "$variant zImage selected!";
+    mv /tmp/anykernel/$variant /tmp/anykernel/zImage;
+  fi;
 fi;
 
 dump_boot;
