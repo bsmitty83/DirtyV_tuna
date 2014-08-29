@@ -240,7 +240,6 @@ int vfs_fsync_range(struct file *file, loff_t start, loff_t end, int datasync)
 
 out:
 	return ret;
->>>>>>> parent of 4e8fdf6... fs/dyn_sync_cntrl: dynamic sync control - Thanks Faux123
 }
 EXPORT_SYMBOL(vfs_fsync_range);
 
