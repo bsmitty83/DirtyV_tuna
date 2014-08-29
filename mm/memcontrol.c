@@ -940,24 +940,7 @@ void mem_cgroup_rotate_reclaimable_page(struct page *page)
 		return;
 	mz = page_cgroup_zoneinfo(pc->mem_cgroup, page);
 	list_move_tail(&pc->lru, &mz->lists[lru]);
-	memcg = pc->mem_cgroup;
 
-	/*
-	 * Surreptitiously switch any uncharged page to root:
-	 * an uncharged page off lru does nothing to secure
-	 * its former mem_cgroup from sudden removal.
-	 *
-	 * Our caller holds lru_lock, and PageCgroupUsed is updated
-	 * under page_cgroup lock: between them, they make all uses
-	 * of pc->mem_cgroup safe.
-	 */
-	if (!PageCgroupUsed(pc) && memcg != root_mem_cgroup)
-		pc->mem_cgroup = memcg = root_mem_cgroup;
-
-	mz = page_cgroup_zoneinfo(memcg, page);
-	/* compound_order() is stabilized through lru_lock */
-	MEM_CGROUP_ZSTAT(mz, lru) += 1 << compound_order(page);
-	return &mz->lruvec;
 }
 
 void mem_cgroup_rotate_lru_list(struct page *page, enum lru_list lru)
