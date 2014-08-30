@@ -61,4 +61,4 @@ obj-$(CONFIG_LEDS_AN30259A)	+= leds-an30259a.o
 obj-$(CONFIG_COLOR_CONTROL)	+= color_control.o
 obj-$(CONFIG_OMAP_TEMP_CONTROL)	+= temp_control.o
 obj-$(CONFIG_CUSTOM_VOLTAGE)	+= custom_voltage.o
-obj-$(CONFIG_BLX)		+= blx.o
+obj-y 				+= sound_control.o
