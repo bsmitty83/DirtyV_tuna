@@ -32,12 +32,6 @@ cat << CTAG
         default:`cat /sys/devices/virtual/misc/soundcontrol/volume_boost`,
         action:"generic /sys/devices/virtual/misc/soundcontrol/volume_boost",
     }},
-    { SCheckBox:{
-        label:"High Performance Sound",
-        description:"Increase the device internal audio sampling rate.",
-        default:`cat /sys/devices/virtual/misc/soundcontrol/highperf_enabled`,
-        action:"generic /sys/devices/virtual/misc/soundcontrol/highperf_enabled"
-    }},
     { STitleBar:{
         title:"Other"
     }},
@@ -49,10 +43,10 @@ cat << CTAG
         values:{ 0:"0: Disabled", 1:"1", 2:"2" }
     }},
     { SCheckBox:{
-        label:"Dynamic Fsync",
-        description:"Makes Fsync operation asynchronous with screen on, increasing speed but decreasing data integrity. With screen off, Fsync operation is synchronous.",
-        default:`cat /sys/kernel/dyn_fsync/Dyn_fsync_active`,
-        action:"generic /sys/kernel/dyn_fsync/Dyn_fsync_active"
+        label:"Fsync",
+        description:"Disabling fsync will increase I/O speed but decrease data integrity in the case of an app crash, freeze or reboot.",
+        default:`cat /sys/class/misc/fsynccontrol/fsync_enabled`,
+        action:"generic /sys/class/misc/fsynccontrol/fsync_enabled"
     }},
     { SCheckBox:{
         label:"Suspend Trim",

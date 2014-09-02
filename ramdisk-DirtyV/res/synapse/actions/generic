@@ -3,18 +3,27 @@ if [ -f $1 ]; then
   case $1 in
     /sys/devices/platform/omapdss/manager0/gamma)
       if [[ ! -z $2 ]]; then
-        [ "$2" != "0" -o `cat $1` != "0" ] && echo $2 > $1;
+        [ "$2" != "0" -o `cat $1` != 0 ] && echo $2 > $1;
       fi;
       echo `cat $1`;
     ;;
 
     /sys/module/omap_temp_sensor/parameters/throttle_enabled)
       if [[ ! -z $2 ]]; then
-        [ "$2" == "1" ] && echo "Y" > $1;
-        [ "$2" == "0" ] && echo "N" > $1;
+        [ "$2" == 1 ] && echo Y > $1;
+        [ "$2" == 0 ] && echo N > $1;
       fi;
-      [ `cat $1` == "Y" ] && echo "1";
-      [ `cat $1` == "N" ] && echo "0";
+      [ `cat $1` == Y ] && echo 1;
+      [ `cat $1` == N ] && echo 0;
+    ;;
+
+    /proc/sys/vm/laptop_mode)
+      if [[ ! -z $2 ]]; then
+        [ "$2" == 1 ] && echo 5 > $1;
+        [ "$2" == 0 ] && echo 0 > $1;
+      fi;
+      [ `cat $1` == 5 ] && echo 1;
+      [ `cat $1` == 0 ] && echo 0;
     ;;
 
     /proc/sys/vm/lowmem_reserve_ratio)
