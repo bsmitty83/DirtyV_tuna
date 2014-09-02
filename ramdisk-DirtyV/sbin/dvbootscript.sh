@@ -60,6 +60,17 @@ echo 1 > /proc/sys/net/ipv4/tcp_dsack;
 echo 1 > /proc/sys/net/ipv4/tcp_low_latency;
 echo 1 > /proc/sys/net/ipv4/tcp_timestamps;
 
+# set up TCP delayed ACK
+chown system:system /sys/kernel/ipv4/tcp_delack_seg /sys/kernel/ipv4/tcp_use_userconfig;
+
+# define TCP delayed ACK settings for Wi-Fi & LTE
+setprop net.tcp.delack.default 1;
+setprop net.tcp.delack.wifi 20;
+setprop net.tcp.delack.lte 8;
+setprop net.tcp.usercfg.default 0;
+setprop net.tcp.usercfg.wifi 1;
+setprop net.tcp.usercfg.lte 1;
+
 # reduce txqueuelen to 0 to switch from a packet queue to a byte one
 for i in /sys/class/net/*; do
   echo 0 > $i/tx_queue_len;
@@ -76,9 +87,8 @@ echo 962500 > /dev/cpuctl/cpu.rt_runtime_us;
 echo 91 > /dev/cpuctl/apps/bg_non_interactive/cpu.shares;
 echo 400000 > /dev/cpuctl/apps/bg_non_interactive/cpu.rt_runtime_us;
 
-# more rational defaults for KSM
-echo 256 > /sys/kernel/mm/ksm/pages_to_scan;
-echo 1500 > /sys/kernel/mm/ksm/sleep_millisecs;
+# enable KSM deferred timer
+echo 1 > /sys/kernel/mm/ksm/deferred_timer;
 
 # initialize cgroup timer_slack for background tasks
 echo 100000000 > /dev/cpuctl/apps/bg_non_interactive/timer_slack.min_slack_ns;
@@ -98,6 +108,9 @@ echo 2884 > /proc/sys/vm/min_free_kbytes;
 
 # disable swappiness by default
 echo 0 > /proc/sys/vm/swappiness;
+
+# improve zram compression performance
+echo 2 > /sys/block/zram0/max_comp_streams;
 
 # general queue tweaks
 for i in /sys/block/*/queue; do
