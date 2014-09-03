@@ -78,11 +78,6 @@ static unsigned int stock_freq_max;
 
 static int oc_val;
 
-#ifdef CONFIG_IVA_OVERCLOCK
-#define IVA_OC_FREQUENCY 430000000 // must match value in opp4xxx_data.c
-static int iva_freq_oc = 0; // boolean flag
-#endif
-
 static unsigned int omap_getspeed(unsigned int cpu)
 {
 	unsigned long rate;
@@ -559,65 +554,6 @@ static struct freq_attr omap_UV_mV_table = {
 };
 #endif
 
-#ifdef CONFIG_IVA_OVERCLOCK
-static ssize_t show_iva_freq_oc(struct cpufreq_policy *policy, char *buf)
-{
-	return sprintf(buf, "%d\n", iva_freq_oc );
-}
-
-static ssize_t store_iva_freq_oc(struct cpufreq_policy *policy, const char *buf, size_t size)
-{
-	int prev_oc, ret;
-	struct device *dev;
-	struct voltagedomain *mpu_voltdm;
-
-	if (iva_freq_oc < 0 || iva_freq_oc > 1 ) {
-		pr_info("iva_oc value error, bailing\n");	
-		return size;
-	}
-
-	mpu_voltdm = voltdm_lookup("iva");
-	if ( mpu_voltdm == NULL ) {
-		pr_info("iva_oc voltdomain error, bailing\n");			
-		return size;
-	}
-
-	prev_oc = iva_freq_oc;
-
-	sscanf(buf, "%d\n", &iva_freq_oc);
-	
-	if (prev_oc == iva_freq_oc) return size;
-
-	mutex_lock(&omap_cpufreq_lock);
-
-	dev = omap_hwmod_name_get_dev("iva");
-	if (IS_ERR(dev)) {
-		pr_err("iva_oc: no iva device, bailing\n" );
-		goto Exit;
-	}
-
-        if ( iva_freq_oc )
-        	ret = opp_enable(dev, IVA_OC_FREQUENCY);
-	else
-		ret = opp_disable(dev, IVA_OC_FREQUENCY);
-
-	pr_info("iva speed %s:  %d, ret: %d\n", iva_freq_oc ? "enabled" : "disabled", IVA_OC_FREQUENCY, ret);
-
-Exit:
-
-	mutex_unlock(&omap_cpufreq_lock);
-
-	return size;
-}
-
-static struct freq_attr omap_cpufreq_attr_iva_freq_oc = {
-	.attr = { .name = "iva_freq_oc", .mode = 0644,},
-	.show = show_iva_freq_oc,
-	.store = store_iva_freq_oc,
-};
-
-#endif
-
 static ssize_t show_gpu_clock(struct cpufreq_policy *policy, char *buf) {
 	struct clk *clk = clk_get(NULL, "dpll_per_m7x2_ck");	
 	return sprintf(buf, "%lu\n", clk->rate/1000);
@@ -694,9 +630,6 @@ static struct freq_attr *omap_cpufreq_attr[] = {
 #ifdef CONFIG_CUSTOM_VOLTAGE
 	&omap_UV_mV_table,
 #endif
-#ifdef CONFIG_IVA_OVERCLOCK
-	&omap_cpufreq_attr_iva_freq_oc,
-#endif
 	&gpu_clock,
 	&iva_clock,
 	&omap_cpufreq_attr_screen_on_freq,
@@ -754,10 +687,6 @@ static int __init omap_cpufreq_init(void)
 	int ret;
 
 	oc_val = 0;
-
-#ifdef CONFIG_IVA_OVERCLOCK
-	iva_freq_oc = 0;
-#endif
 
 	if (cpu_is_omap24xx())
 		mpu_clk_name = "virt_prcm_set";

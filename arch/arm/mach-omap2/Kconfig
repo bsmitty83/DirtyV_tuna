@@ -436,12 +436,6 @@ config OMAP_UCFREQS
     help
       Enable the 180/230 MPU frequency slot.
 
-config IVA_OVERCLOCK
-	bool "IVA overlock on omap4460"
-	default y
-	help
-	 If enabled,creats a sysfs entry to allow overclocking the IVA on the omap4460.
-
 endmenu
 
 choice 
