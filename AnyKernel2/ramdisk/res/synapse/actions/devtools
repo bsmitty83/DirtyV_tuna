@@ -6,12 +6,12 @@ case $1 in
     locked=01;
     unlocked=00;
 
-    lockstate=`dd ibs=1 count=1 skip=124 obs=1 if=$block 2> /dev/null | od -h | head -n 1 | cut -c 11-`;
+    lockstate=`dd ibs=1 count=1 skip=124 obs=1 if=$block 2> /dev/null | od -hv | head -n 1 | awk '{ print $2 }' | cut -c 3-`;
 
-    if [ $lockstate == $locked ]; then
+    if [ "$lockstate" == $locked ]; then
       echo "Unlocking...";
       setstate=$unlocked;
-    elif [ $lockstate == $unlocked ]; then
+    elif [ "$lockstate" == $unlocked ]; then
       echo "Locking...";
       setstate=$locked;
     else
