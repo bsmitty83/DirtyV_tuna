@@ -190,7 +190,10 @@ append_file init.tuna.rc "dvbootscript" init.tuna2;
 # add SELinux commandline only in KitKat
 android_ver=$(mount /system; grep "^ro.build.version.release" /system/build.prop | cut -d= -f2; umount /system);
 case $android_ver in
-  4.4*) cmdtmp=`cat $split_img/*-cmdline`; echo "androidboot.selinux=permissive $cmdtmp" > $split_img/*-cmdline;;
+  4.4*) cmdtmp=`cat $split_img/*-cmdline`;
+        if [[ "$cmdtmp" != *selinux=permissive* ]]; then
+          echo "androidboot.selinux=permissive $cmdtmp" > $split_img/*-cmdline;
+        fi;;
 esac;
 
 write_boot;
