@@ -106,11 +106,19 @@ echo 0 > /proc/sys/kernel/randomize_va_space;
 # double the default minfree kb
 echo 2884 > /proc/sys/vm/min_free_kbytes;
 
-# disable swappiness by default
-echo 0 > /proc/sys/vm/swappiness;
-
 # improve zram compression performance
 echo 2 > /sys/block/zram0/max_comp_streams;
+
+# increase swappiness and enable zram by default on SmittyV, otherwise disable
+case `uname -r` in
+  *SmittyV)
+    echo 70 > /proc/sys/vm/swappiness;
+    echo $((64 * 1024 * 1024)) > /sys/block/zram0/disksize;
+    mkswap /dev/block/zram0;
+    swapon /dev/block/zram0;;
+  *)
+    echo 0 > /proc/sys/vm/swappiness;;
+esac;
 
 # general queue tweaks
 for i in /sys/block/*/queue; do
