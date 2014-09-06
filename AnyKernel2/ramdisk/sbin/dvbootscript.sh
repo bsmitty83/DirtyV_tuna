@@ -107,6 +107,7 @@ echo 0 > /proc/sys/kernel/randomize_va_space;
 echo 2884 > /proc/sys/vm/min_free_kbytes;
 
 # improve zram compression performance
+echo "lz4" > /sys/block/zram0/comp_algorithm;
 echo 2 > /sys/block/zram0/max_comp_streams;
 
 # increase swappiness and enable zram by default on SmittyV, otherwise disable

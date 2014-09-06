@@ -142,6 +142,11 @@ cat << CTAG
         min:50, max:3000, step:50, unit:" ms",
         default:`cat /sys/kernel/mm/ksm/sleep_millisecs`,
         action:"generic /sys/kernel/mm/ksm/sleep_millisecs"
+    }},
+    { SCheckBox:{
+        label:"Deferred Timer",
+        default:`cat /sys/kernel/mm/ksm/deferred_timer`,
+        action:"generic /sys/kernel/mm/ksm/deferred_timer"
     }}
   ]
 }

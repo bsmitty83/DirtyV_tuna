@@ -1,18 +1,20 @@
 if [[ ! -z $2 ]]; then
   zram_size=$2;
 
+  persist=`cat /sys/block/$1/max_comp_streams`;
   swapoff /dev/block/$1 > /dev/null 2>&1;
-  echo 1 > /sys/devices/virtual/block/$1/reset;
+  echo 1 > /sys/block/$1/reset;
+  echo $persist > /sys/block/$1/max_comp_streams;
 
   if [ $zram_size -gt 0 ]; then
-    echo $((zram_size * 1024 * 1024)) > /sys/devices/virtual/block/$1/disksize;
+    echo $((zram_size * 1024 * 1024)) > /sys/block/$1/disksize;
     mkswap /dev/block/$1 > /dev/null 2>&1;
     swapon /dev/block/$1 > /dev/null 2>&1;
   fi;
 
 else
   if [ -z $zram_size ]; then
-    zram_size=`cat /sys/devices/virtual/block/$1/disksize`;
+    zram_size=`cat /sys/block/$1/disksize`;
     zram_size=$((zram_size / 1024 / 1024));
   fi;
 

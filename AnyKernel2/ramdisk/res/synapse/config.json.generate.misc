@@ -43,6 +43,12 @@ cat << CTAG
         values:{ 0:"0: Disabled", 1:"1", 2:"2" }
     }},
     { SCheckBox:{
+        label:"Fast Random",
+        description:"Use the frandom alternative random number generator instead of the default.",
+        default:0,
+        action:"frandom"
+    }},
+    { SCheckBox:{
         label:"Fsync",
         description:"Disabling fsync will increase I/O speed but decrease data integrity in the case of an app crash, freeze or reboot.",
         default:`cat /sys/class/misc/fsynccontrol/fsync_enabled`,

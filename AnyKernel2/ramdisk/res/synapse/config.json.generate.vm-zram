@@ -154,8 +154,37 @@ cat << CTAG
         title:"Z-RAM",
         description:"Attempts to increase performance by compressing RAM to create a virtual swap device. Potentially frees up RAM for multitasking at the cost of CPU to de/compress pages."
     }},
+    { SOptionList:{
+        title:"Compression Algorithm",
+        action:"bracket-option /sys/block/zram0/comp_algorithm",
+        values:[
+`
+            for ZRCOMP in \`cat /sys/block/zram0/comp_algorithm | sed -e 's/\]//;s/\[//'\`; do
+                echo "\"$ZRCOMP\",";
+            done;
+`
+        ],
+        notify:[
+            { on:SET,
+              do:[ RESET, APPLY, REFRESH ],
+              to:[ "zram zram0" ]
+            }
+        ]
+    }},
     { SSeekBar:{
-        title:"Disk 1",
+        title:"Max Compression Streams",
+        min:1, max:5,
+        default:`cat /sys/block/zram0/max_comp_streams`,
+        action:"generic /sys/block/zram0/max_comp_streams",
+        notify:[
+            { on:SET,
+              do:[ RESET, APPLY, REFRESH ],
+              to:"zram zram0"
+            }
+        ]
+    }},
+    { SSeekBar:{
+        title:"Disk Size",
         min:0, max:384, step:8, unit:" MB",
         default:0,
         action:"zram zram0"
