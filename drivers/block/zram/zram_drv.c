@@ -32,6 +32,7 @@
 #include <linux/string.h>
 #include <linux/vmalloc.h>
 #include <linux/err.h>
+#include <linux/ratelimit.h>
 
 #include "zram_drv.h"
 
