@@ -9,8 +9,8 @@ if [[ ! -z $1 ]]; then
     ;;
 
     0)
-      mv /dev/random.orig /dev/random;
-      mv /dev/urandom.orig /dev/urandom;
+      mv /dev/random.orig /dev/random 2> /dev/null;
+      mv /dev/urandom.orig /dev/urandom 2> /dev/null;
     ;;
   esac;
 fi;
