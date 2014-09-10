@@ -3257,7 +3257,6 @@ long rtcc_reclaim_pages(long nr_to_reclaim)
 		.may_unmap = 1,
 		.may_writepage = 1,
 		.nr_to_reclaim = nr_to_reclaim,
-		.swappiness = 100,
 		.order = 0,
 	};
 	struct shrink_control shrink = {
