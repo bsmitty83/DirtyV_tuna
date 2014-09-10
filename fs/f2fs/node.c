@@ -842,7 +842,7 @@ void remove_inode_page(struct inode *inode)
 	truncate_node(&dn);
 }
 
-struct page *new_inode_page(struct inode *inode)
+struct page *new_inode_page(struct inode *inode, const struct qstr *name)
 {
 	struct dnode_of_data dn;
 
