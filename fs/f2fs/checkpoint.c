@@ -344,7 +344,6 @@ bool exist_written_data(struct f2fs_sb_info *sbi, nid_t ino, int mode)
 {
 	struct ino_entry *e;
 	spin_lock(&sbi->ino_lock[mode]);
-	e = radix_tree_lookup(&sbi->ino_root[mode], ino);
 	spin_unlock(&sbi->ino_lock[mode]);
 	return e ? true : false;
 }
@@ -358,7 +357,6 @@ static void release_dirty_inode(struct f2fs_sb_info *sbi)
 		spin_lock(&sbi->ino_lock[i]);
 		list_for_each_entry_safe(e, tmp, &sbi->ino_list[i], list) {
 			list_del(&e->list);
-			radix_tree_delete(&sbi->ino_root[i], e->ino);
 			kmem_cache_free(ino_entry_slab, e);
 		}
 		spin_unlock(&sbi->ino_lock[i]);
