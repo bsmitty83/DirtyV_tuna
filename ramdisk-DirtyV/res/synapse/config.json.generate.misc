@@ -65,6 +65,12 @@ cat << CTAG
         description:"When disabled this will stop dmesg/kmsg and logcat creation; crash reports will be useless, but there is a minor possible gain to battery life.",
         default:`cat /sys/kernel/logger_mode/logger_mode | tr -cd [0-9]`,
         action:"generic /sys/kernel/logger_mode/logger_mode"
+    }},
+    { SCheckBox:{
+        label:"Custom Kernel Persistence",
+        description:"Install an addon.d script to retain your custom kernel through a ROM upgrade/dirty flash.",
+        default:0,
+        action:"scripts customkernel.sh /system/addon.d"
     }}
   ]
 }
