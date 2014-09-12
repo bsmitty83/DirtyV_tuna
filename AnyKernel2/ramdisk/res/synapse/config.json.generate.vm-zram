@@ -162,7 +162,6 @@ cat << CTAG
     }},
     { SOptionList:{
         title:"Compression Algorithm",
-        default:`echo $(/res/synapse/actions/bracket-option /sys/block/zram0/comp_algorithm)`,
         action:"bracket-option /sys/block/zram0/comp_algorithm",
         values:[
 `

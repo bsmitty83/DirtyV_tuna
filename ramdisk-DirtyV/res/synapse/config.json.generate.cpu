@@ -79,16 +79,6 @@ cat << CTAG
         }
     }},
     { STitleBar:{
-        title:"Power Saving"
-    }},
-    { SSeekBar:{
-        title:"Multicore Power Savings",
-        description:"Try to group tasks into the least cores possible. The higher the value, the more aggressive.",
-        default:`cat /sys/devices/system/cpu/sched_mc_power_savings`,
-        action:"generic /sys/devices/system/cpu/sched_mc_power_savings",
-        values:{ 0:"0: Disabled", 1:"1", 2:"2" }
-    }},
-    { STitleBar:{
         title:"Thermal Framework"
     }},
     { SCheckBox:{

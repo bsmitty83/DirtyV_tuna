@@ -87,7 +87,7 @@ echo 962500 > /dev/cpuctl/cpu.rt_runtime_us;
 echo 91 > /dev/cpuctl/apps/bg_non_interactive/cpu.shares;
 echo 400000 > /dev/cpuctl/apps/bg_non_interactive/cpu.rt_runtime_us;
 
-# enable KSM deferred timer
+# enable KSM deferred timer by default
 echo 1 > /sys/kernel/mm/ksm/deferred_timer;
 
 # initialize cgroup timer_slack for background tasks
@@ -110,9 +110,10 @@ echo 2884 > /proc/sys/vm/min_free_kbytes;
 echo "lz4" > /sys/block/zram0/comp_algorithm;
 echo 2 > /sys/block/zram0/max_comp_streams;
 
-# increase swappiness and enable zram by default on SmittyV, otherwise disable
+# increase swappiness and enable zram and ksm by default on SmittyV, otherwise disable
 case `uname -r` in
   *SmittyV)
+    echo 1 > /sys/kernel/mm/ksm/run;
     echo 70 > /proc/sys/vm/swappiness;
     echo $((64 * 1024 * 1024)) > /sys/block/zram0/disksize;
     mkswap /dev/block/zram0;
@@ -150,10 +151,10 @@ for i in /storage/emulated/*; do
 done;
 
 # workaround for hung boots with nodiratime+noatime, barrier=0+data=writeback or noauto_da_alloc on ext4, and
-# with inline_data, flush_merge, or active_logs=2 on f2fs for userdata via the fstab on older init binaries
+# with nobarrier, inline_data, flush_merge, or active_logs=2 on f2fs for userdata via the fstab on older init binaries
 case `getprop ro.fs.data` in
   ext4) $bb mount -o remount,nosuid,nodev,noatime,nodiratime,barrier=0,noauto_da_alloc -t auto /data;;
-  f2fs) $bb mount -o remount,nosuid,nodev,noatime,nodiratime,inline_data,flush_merge,active_logs=2 -t auto /data;;
+  f2fs) $bb mount -o remount,nosuid,nodev,noatime,nodiratime,inline_data,flush_merge,nobarrier,active_logs=2 -t auto /data;;
 esac;
 
 # lmk tweaks for fewer empty background processes
@@ -181,13 +182,12 @@ fi;
 # set up Synapse support
 /sbin/uci&
 
-# wait for systemui, move it to parent task group, move ksmd to background task group then enable, and adjust systemui+kswapd priorities
+# wait for systemui, move it to parent task group, move ksmd to background task group, and adjust systemui+kswapd priorities
 while sleep 1; do
   if [ "$($bb pidof com.android.systemui)" ]; then
     systemui=`$bb pidof com.android.systemui`;
     echo $systemui > /dev/cpuctl/tasks;
     echo `$bb pgrep ksmd` > /dev/cpuctl/apps/bg_non_interactive/tasks;
-    echo 1 > /sys/kernel/mm/ksm/run;
     echo -17 > /proc/$systemui/oom_adj;
     $bb renice -18 $systemui;
     $bb renice 5 `$bb pgrep kswapd`;
