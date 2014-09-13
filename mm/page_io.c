@@ -43,7 +43,7 @@ static struct bio *get_swap_bio(gfp_t gfp_flags,
 	return bio;
 }
 
-void end_swap_bio_write(struct bio *bio, int err)
+static void end_swap_bio_write(struct bio *bio, int err)
 {
 	const int uptodate = test_bit(BIO_UPTODATE, &bio->bi_flags);
 	struct page *page = bio->bi_io_vec[0].bv_page;
@@ -129,8 +129,7 @@ out:
 	bio_put(bio);
 }
 
-int __swap_writepage(struct page *page, struct writeback_control *wbc,
-	void (*end_write_func)(struct bio *, int));
+int __swap_writepage(struct page *page, struct writeback_control *wbc);
 
 /*
  * We may have stale swap cache pages in memory: notice
@@ -150,18 +149,17 @@ int swap_writepage(struct page *page, struct writeback_control *wbc)
     	end_page_writeback(page);
     	goto out;
   } 
-	ret = __swap_writepage(page, wbc, end_swap_bio_write);
+	ret = __swap_writepage(page, wbc);
 out:
 	return ret;
 }
 
-int __swap_writepage(struct page *page, struct writeback_control *wbc,
-	void (*end_write_func)(struct bio *, int))
+int __swap_writepage(struct page *page, struct writeback_control *wbc)
 {
 	struct bio *bio;
 	int ret = 0, rw = WRITE;
 	struct swap_info_struct *sis = page_swap_info(page);
-	bio = get_swap_bio(GFP_NOIO, page, end_write_func);
+	bio = get_swap_bio(GFP_NOIO, page, end_swap_bio_write);
 	if (bio == NULL) {
 		set_page_dirty(page);
 		unlock_page(page);
