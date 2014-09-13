@@ -131,4 +131,14 @@ static bool match_memcg(struct mem_cgroup *a, struct mem_cgroup *b)
 
 void disable_swap_token(struct mem_cgroup *memcg)
 {
+	/* memcg reclaim don't disable unrelated mm token. */
+	if (match_memcg(memcg, swap_token_memcg)) {
+		spin_lock(&swap_token_lock);
+		if (match_memcg(memcg, swap_token_memcg)) {
+			trace_disable_swap_token(swap_token_mm);
+			swap_token_mm = NULL;
+			swap_token_memcg = NULL;
+		}
+		spin_unlock(&swap_token_lock);
+	}
 }
