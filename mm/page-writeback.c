@@ -250,8 +250,13 @@ void task_dirty_inc(struct task_struct *tsk)
 static void bdi_writeout_fraction(struct backing_dev_info *bdi,
 		long *numerator, long *denominator)
 {
-	prop_fraction_percpu(&vm_completions, &bdi->completions,
+	if (bdi_cap_writeback_dirty(bdi)) {
+		prop_fraction_percpu(&vm_completions, &bdi->completions,
 				numerator, denominator);
+	} else {
+		*numerator = 0;
+		*denominator = 1;
+	}
 }
 
 static inline void task_dirties_fraction(struct task_struct *tsk,
@@ -506,9 +511,6 @@ static void balance_dirty_pages(struct address_space *mapping,
 	unsigned long pause = 1;
 	bool dirty_exceeded = false;
 	struct backing_dev_info *bdi = mapping->backing_dev_info;
-
-	if (!bdi_cap_account_dirty(bdi))
-		return;
 
 	for (;;) {
 		struct writeback_control wbc = {
