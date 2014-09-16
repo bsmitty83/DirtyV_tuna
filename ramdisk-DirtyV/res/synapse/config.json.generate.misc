@@ -24,13 +24,13 @@ cat << CTAG
         title:"Vibration Control", max:127,
         description:"Change the strength of vibration.",
         default:`cat /sys/vibrator/pwmvalue`,
-        action:"generic /sys/vibrator/pwmvalue"
+        action:"special /sys/vibrator/pwmvalue"
     }},
     { SSeekBar:{
         title:"Headphone Volume Boost", max:3,
         description:"Raise the volume of the headphone jack. Some kernels only allow 0-1.",
         default:`cat /sys/devices/virtual/misc/soundcontrol/volume_boost`,
-        action:"generic /sys/devices/virtual/misc/soundcontrol/volume_boost",
+        action:"generic /sys/devices/virtual/misc/soundcontrol/volume_boost"
     }},
     { STitleBar:{
         title:"Other"
@@ -41,6 +41,12 @@ cat << CTAG
         default:`cat /sys/kernel/fast_charge/force_fast_charge`,
         action:"generic /sys/kernel/fast_charge/force_fast_charge",
         values:{ 0:"0: Disabled", 1:"1", 2:"2" }
+    }},
+    { SCheckBox:{
+        label:"Custom Kernel Persistence",
+        description:"Install an addon.d script to retain your custom kernel through a ROM upgrade/dirty flash.",
+        default:0,
+        action:"scripts customkernel.sh /system/addon.d"
     }},
     { SCheckBox:{
         label:"Fast Random",
@@ -58,19 +64,13 @@ cat << CTAG
         label:"Suspend Trim",
         description:"Perform filesystem trimming periodically when screen is off for over 60 seconds, to maintain I/O speeds over time.",
         default:`cat /data/trimhelper | sed -n '3p'`,
-        action:"generic /data/trimhelper"
+        action:"special /data/trimhelper"
     }},
     { SCheckBox:{
         label:"System Logging",
         description:"When disabled this will stop dmesg/kmsg and logcat creation; crash reports will be useless, but there is a minor possible gain to battery life.",
         default:`cat /sys/kernel/logger_mode/logger_mode | tr -cd [0-9]`,
-        action:"generic /sys/kernel/logger_mode/logger_mode"
-    }},
-    { SCheckBox:{
-        label:"Custom Kernel Persistence",
-        description:"Install an addon.d script to retain your custom kernel through a ROM upgrade/dirty flash.",
-        default:0,
-        action:"scripts customkernel.sh /system/addon.d"
+        action:"special /sys/kernel/logger_mode/logger_mode"
     }}
   ]
 }

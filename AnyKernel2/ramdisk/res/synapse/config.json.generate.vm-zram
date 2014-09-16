@@ -52,8 +52,8 @@ cat << CTAG
     }},
     { SCheckBox:{
         label:"Laptop Mode",
-        default:`cat /proc/sys/vm/laptop_mode`,
-        action:"generic /proc/sys/vm/laptop_mode"
+        default:`echo $(/res/synapse/actions/special /proc/sys/vm/laptop_mode)`,
+        action:"special /proc/sys/vm/laptop_mode"
     }},
     { STitleBar:{
         title:"Free Memory"
@@ -117,8 +117,8 @@ cat << CTAG
     }},
     { SSeekBar:{
         title:"Low-Mem Reserve Ratio (x2 Array)", max:100,
-        default:`echo $(/res/synapse/actions/generic /proc/sys/vm/lowmem_reserve_ratio)`,
-        action:"generic /proc/sys/vm/lowmem_reserve_ratio"
+        default:`echo $(/res/synapse/actions/special /proc/sys/vm/lowmem_reserve_ratio)`,
+        action:"special /proc/sys/vm/lowmem_reserve_ratio"
     }},
     { SSeekBar:{
         title:"Per-CPU Pagelist Fraction (1/x)", max:200,

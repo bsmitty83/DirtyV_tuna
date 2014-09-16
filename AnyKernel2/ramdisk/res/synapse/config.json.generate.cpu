@@ -85,7 +85,7 @@ cat << CTAG
         label:"Thermal Throttling",
         description:"Force lower CPU frequencies when temperature reaches the throttling limit, to avoid overheating.",
         default:`polar_to_bool /sys/module/omap_temp_sensor/parameters/throttle_enabled`,
-        action:"generic /sys/module/omap_temp_sensor/parameters/throttle_enabled"
+        action:"special /sys/module/omap_temp_sensor/parameters/throttle_enabled"
     }},
     { SSeekBar:{
         title: "Temperature Limit",

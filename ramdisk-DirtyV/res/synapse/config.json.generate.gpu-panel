@@ -27,13 +27,13 @@ cat << CTAG
         description:"Set the luminance difference between dark and light.",
         min:-24, max:16,
         default:`cat /sys/module/panel_s6e8aa0/parameters/contrast`,
-        action:"generic /sys/module/panel_s6e8aa0/parameters/contrast"
+        action:"special /sys/module/panel_s6e8aa0/parameters/contrast"
     }},
     { SSeekBar:{
         title:"OMAP Gamma Contrast",
         description:"Set midtones (middle gray levels).",
         default:`cat /sys/devices/platform/omapdss/manager0/gamma`,
-        action:"generic /sys/devices/platform/omapdss/manager0/gamma",
+        action:"special /sys/devices/platform/omapdss/manager0/gamma",
         values:{ 0:"0: Disabled", 1:"1", 2:"2", 3:"3", 4:"4",
                  5:"5: Default", 6:"6", 7:"7", 8:"8", 9:"9", 10:"10"
         }
