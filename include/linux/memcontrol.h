@@ -131,6 +131,7 @@ extern void mem_cgroup_print_oom_info(struct mem_cgroup *memcg,
 					struct task_struct *p);
 extern void mem_cgroup_replace_page_cache(struct page *oldpage,
 					struct page *newpage);
+extern void mem_cgroup_reset_owner(struct page *page);
 
 extern unsigned long try_to_free_mem_cgroup_pages(struct mem_cgroup *mem,
 						  gfp_t gfp_mask, bool noswap,
@@ -393,6 +394,10 @@ void mem_cgroup_count_vm_event(struct mm_struct *mm, enum vm_event_item idx)
 }
 static inline void mem_cgroup_replace_page_cache(struct page *oldpage,
 				struct page *newpage)
+{
+}
+
+static inline void mem_cgroup_reset_owner(struct page *page)
 {
 }
 #endif /* CONFIG_CGROUP_MEM_CONT */
