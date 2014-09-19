@@ -104,11 +104,12 @@ static spinlock_t above_hispeed_delay_lock;
 static unsigned int *above_hispeed_delay = default_above_hispeed_delay;
 static int nabove_hispeed_delay = ARRAY_SIZE(default_above_hispeed_delay);
 
-/* Non-zero means indefinite speed boost active */
-static int boost_val;
-/* 500ms - 0.5s */
+/* Duration of a boot pulse in usecs 
+ * Non-zero means indefinite speed boost
+ * 500ms - 0.5s 
+ */
 #define DEFAULT_BOOSTPULSE_DURATION 500000
-/* Duration of a boot pulse in usecs */
+
 static int boostpulse_duration_val = DEFAULT_BOOSTPULSE_DURATION;
 
 /*
