@@ -51,12 +51,12 @@ union vfp_state *vfp_current_hw_state[NR_CPUS];
   * Is 'thread's most up to date state stored in this CPUs hardware?
   * Must be called from non-preemptible context.
   */
- static bool vfp_state_in_hw(unsigned int cpu, struct thread_info *thread)
+static bool vfp_state_in_hw(unsigned int cpu, struct thread_info *thread)
  {
- #ifdef CONFIG_SMP
+#ifdef CONFIG_SMP
          if (thread->vfpstate.hard.cpu != cpu)
                 return false;
- #endif
+#endif
          return vfp_current_hw_state[cpu] == &thread->vfpstate;
  }
 
