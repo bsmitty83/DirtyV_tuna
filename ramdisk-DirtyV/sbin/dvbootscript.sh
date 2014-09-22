@@ -87,11 +87,13 @@ echo 962500 > /dev/cpuctl/cpu.rt_runtime_us;
 echo 91 > /dev/cpuctl/apps/bg_non_interactive/cpu.shares;
 echo 400000 > /dev/cpuctl/apps/bg_non_interactive/cpu.rt_runtime_us;
 
-# enable KSM deferred timer by default
+# more rational defaults for KSM and enable deffered timer
+echo 256 > /sys/kernel/mm/ksm/pages_to_scan;
+echo 1500 > /sys/kernel/mm/ksm/sleep_millisecs;
 echo 1 > /sys/kernel/mm/ksm/deferred_timer;
 
 # initialize cgroup timer_slack for background tasks
-echo 100000000 > /dev/cpuctl/apps/bg_non_interactive/timer_slack.min_slack_ns;
+echo 50000000 > /dev/cpuctl/apps/bg_non_interactive/timer_slack.min_slack_ns;
 
 # decrease fs lease time
 echo 10 > /proc/sys/fs/lease-break-time;
