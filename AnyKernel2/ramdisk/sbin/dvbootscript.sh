@@ -52,6 +52,9 @@ echo 0 > /sys/module/earlysuspend/parameters/debug_mask;
 echo 0 > /sys/module/alarm/parameters/debug_mask;
 echo 0 > /sys/module/alarm_dev/parameters/debug_mask;
 echo 0 > /sys/module/binder/parameters/debug_mask;
+echo 0 > /sys/module/lowmemorykiller/parameters/debug_level;
+echo 0 > /sys/module/kernel/parameters/initcall_debug;
+echo 0 > /sys/module/xt_qtaguid/parameters/debug_mask;
 
 # suitable configuration to help reduce network latency
 echo 2 > /proc/sys/net/ipv4/tcp_ecn;

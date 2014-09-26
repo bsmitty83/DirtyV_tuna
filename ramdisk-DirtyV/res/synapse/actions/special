@@ -62,6 +62,14 @@ if [ -f $1 ]; then
       fi;
       echo `cat $1 | sed -n '3p'`;
     ;;
+
+    /sepolicy)
+      if [[ ! -z $2 ]]; then
+        setenforce $2;
+      fi;
+      [ `getenforce` == "Enforcing" ] && echo 1;
+      [ `getenforce` == "Permissive" ] && echo 0;
+    ;;
   esac;
 
 fi;

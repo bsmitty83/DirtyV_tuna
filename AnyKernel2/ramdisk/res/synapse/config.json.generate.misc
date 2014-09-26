@@ -61,6 +61,12 @@ cat << CTAG
         action:"generic /sys/class/misc/fsynccontrol/fsync_enabled"
     }},
     { SCheckBox:{
+        label:"SELinux Policy",
+        description:"Enable to set to Enforcing, disable to set to Permissive. Tethering may be broken on some ROMs when set to Enforcing.",
+        default:`echo $(/res/synapse/actions/special /sepolicy)`,
+        action:"special /sepolicy"
+    }},
+    { SCheckBox:{
         label:"Suspend Trim",
         description:"Perform filesystem trimming periodically when screen is off for over 60 seconds, to maintain I/O speeds over time.",
         default:`cat /data/trimhelper | sed -n '3p'`,
@@ -71,6 +77,32 @@ cat << CTAG
         description:"When disabled this will stop dmesg/kmsg and logcat creation; crash reports will be useless, but there is a minor possible gain to battery life.",
         default:`cat /sys/kernel/logger_mode/logger_mode | tr -cd [0-9]`,
         action:"special /sys/kernel/logger_mode/logger_mode"
+    }},
+    { STitleBar:{
+        title:"Kernel Samepage Merging"
+    }},
+    { SCheckBox:{
+        label:"Kernel Samepage Merging",
+        description:"KSM combines duplicate memory pages of different processes to possibly improve usage/performance of system memory.",
+        default:`cat /sys/kernel/mm/ksm/run`,
+        action:"generic /sys/kernel/mm/ksm/run"
+    }},
+    { SSeekBar:{
+        title:"Pages To Scan",
+        min:4, max:1024, step:4,
+        default:`cat /sys/kernel/mm/ksm/pages_to_scan`,
+        action:"generic /sys/kernel/mm/ksm/pages_to_scan"
+    }},
+    { SSeekBar:{
+        title:"Sleep",
+        min:50, max:3000, step:50, unit:" ms",
+        default:`cat /sys/kernel/mm/ksm/sleep_millisecs`,
+        action:"generic /sys/kernel/mm/ksm/sleep_millisecs"
+    }},
+    { SCheckBox:{
+        label:"Deferred Timer",
+        default:`cat /sys/kernel/mm/ksm/deferred_timer`,
+        action:"generic /sys/kernel/mm/ksm/deferred_timer"
     }}
   ]
 }

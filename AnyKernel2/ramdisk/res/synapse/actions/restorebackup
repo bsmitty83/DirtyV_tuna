@@ -116,6 +116,12 @@ case "$1" in
     am start -a android.intent.action.MAIN -n com.af.synapse/.MainActivity 2> /dev/null;
   ;;
 
+  reset)
+    rm -f /data/data/com.af.synapse/databases/actionValueStore*;
+    sleep 1;
+    pkill -f synapse;
+  ;;
+
   switch)
     mount -t rootfs -o rw,remount rootfs;
     actionpath=`/sbin/uci actionpath`;

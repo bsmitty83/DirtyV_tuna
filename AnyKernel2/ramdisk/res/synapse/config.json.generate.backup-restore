@@ -97,6 +97,10 @@ cat << CTAG
         action:"restorebackup restart"
     }},
     { SButton:{
+        label:"Reset Synapse",
+        action:"restorebackup reset"
+    }},
+    { SButton:{
         label:"Toggle Dev Tools",
         action:"restorebackup switch"
     }}

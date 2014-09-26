@@ -104,6 +104,11 @@ cat << CTAG
         action:"generic /proc/sys/kernel/sched_child_runs_first"
     }},
     { SCheckBox:{
+        label:"Gentle Fair Sleepers",
+        default:`cat /sys/kernel/sched/gentle_fair_sleepers`,
+        action:"generic /sys/kernel/sched/gentle_fair_sleepers"
+    }},
+    { SCheckBox:{
         label:"Tunable Scaling",
         default:`cat /proc/sys/kernel/sched_tunable_scaling`,
         action:"generic /proc/sys/kernel/sched_tunable_scaling"
@@ -121,32 +126,6 @@ cat << CTAG
         min:1, max:100, unit:" s",
         default:`cat /proc/sys/fs/lease-break-time`,
         action:"generic /proc/sys/fs/lease-break-time"
-    }},
-    { STitleBar:{
-        title:"Kernel Samepage Merging"
-    }},
-    { SCheckBox:{
-        label:"Kernel Samepage Merging",
-        description:"KSM combines duplicate memory pages of different processes to possibly improve usage/performance of system memory.",
-        default:`cat /sys/kernel/mm/ksm/run`,
-        action:"generic /sys/kernel/mm/ksm/run"
-    }},
-    { SSeekBar:{
-        title:"Pages To Scan",
-        min:4, max:1024, step:4,
-        default:`cat /sys/kernel/mm/ksm/pages_to_scan`,
-        action:"generic /sys/kernel/mm/ksm/pages_to_scan"
-    }},
-    { SSeekBar:{
-        title:"Sleep",
-        min:50, max:3000, step:50, unit:" ms",
-        default:`cat /sys/kernel/mm/ksm/sleep_millisecs`,
-        action:"generic /sys/kernel/mm/ksm/sleep_millisecs"
-    }},
-    { SCheckBox:{
-        label:"Deferred Timer",
-        default:`cat /sys/kernel/mm/ksm/deferred_timer`,
-        action:"generic /sys/kernel/mm/ksm/deferred_timer"
     }}
   ]
 }
