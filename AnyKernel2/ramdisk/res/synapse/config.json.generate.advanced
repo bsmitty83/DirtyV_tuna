@@ -126,7 +126,20 @@ cat << CTAG
         min:1, max:100, unit:" s",
         default:`cat /proc/sys/fs/lease-break-time`,
         action:"generic /proc/sys/fs/lease-break-time"
-    }}
+    }},
+    { STitleBar:{
+        title:"Kernel Sched Features"
+    }},
+`
+    for i in $(cat /sys/kernel/debug/sched_features); do
+        echo '{ SCheckBox:{
+                  label:"'$(echo ${i//_/ } | sed 's/^NO //g')'",
+                  default:'$(/res/synapse/actions/sched $i)',
+                  action:"sched '$i'"
+              }},
+        ';
+    done;
+`
   ]
 }
 CTAG
