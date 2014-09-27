@@ -22,7 +22,6 @@
 #include <linux/uaccess.h>
 #include <linux/io.h>
 #include <linux/persistent_ram.h>
-#include "ram_console.h"
 #include <linux/platform_data/ram_console.h>
 
 
