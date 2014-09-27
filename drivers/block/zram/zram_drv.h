@@ -62,7 +62,7 @@ enum zram_pageflags {
 /*-- Data structures */
 
 /* Allocated for each disk page */
-struct zram_table_entry {
+struct table {
 	unsigned long handle;
 	u16 size;	/* object size (excluding header) */
 	u8 count;	/* object ref count (not yet used) */
@@ -83,7 +83,7 @@ struct zram_stats {
 
 struct zram_meta {
 	rwlock_t tb_lock;	/* protect table */
-	struct zram_table_entry  *table;
+	struct table *table;
 	struct zs_pool *mem_pool;
 };
 
