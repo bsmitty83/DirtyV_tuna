@@ -33,7 +33,7 @@ config LOGCAT_SIZE
 config ANDROID_RAM_CONSOLE
 	bool "Android RAM buffer console"
 	select ANDROID_PERSISTENT_RAM
-	default 
+	default y
 
 config ANDROID_TIMED_OUTPUT
 	bool "Timed output class driver"
