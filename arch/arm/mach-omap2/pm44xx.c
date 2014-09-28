@@ -76,6 +76,30 @@ static struct powerdomain *core_pwrdm, *per_pwrdm;
 
 static struct voltagedomain *mpu_voltdm, *iva_voltdm, *core_voltdm;
 
+/* Errata ID: i736: All OMAP4
+ * There is a HW bug in CMD PHY which gives ISO signals as same for both
+ * PADn and PADp on differential IO pad, because of which IO leaks higher
+ * as pull controls are differential internally and pull value does not
+ * match A value.
+ * Though there is no functionality impact due to this bug, it is seen
+ * that by disabling the pulls there is a savings ~500uA in OSWR, but draws
+ * ~300uA more during OFF mode.
+ * Workaround:
+ * To prevent an increase in leakage, it is recommended to disable the pull
+ * logic for these I/Os except during off mode.
+ * So the default state of the I/Os (to program at boot) will have pull
+ * logic disable:
+ * CONTROL_LPDDR2IO1_2[18:17]LPDDR2IO1_GR10_WD = 00
+ * CONTROL_LPDDR2IO2_2[18:17]LPDDR2IO2_GR10_WD = 00
+ * When entering off mode, these I/Os must be configured with pulldown enable:
+ * CONTROL_LPDDR2IO1_2[18:17]LPDDR2IO1_GR10_WD = 10
+ * CONTROL_LPDDR2IO2_2[18:17]LPDDR2IO2_GR10_WD = 10
+ * When resuming from off mode, pull logic must be disabled.
+ */
+#define OMAP44xx_PM_ERRATUM_LPDDR_CLK_IO_i736 BIT(4)
+#define LPDDR_WD_PULL_DOWN 0x02
+
+
 static struct clockdomain *tesla_clkdm;
 static struct powerdomain *tesla_pwrdm;
 
