@@ -1,5 +1,3 @@
-ccflags-y += -I$(src)                   # needed for trace events
-
 obj-$(CONFIG_ANDROID_BINDER_IPC)	+= binder.o
 obj-$(CONFIG_ANDROID_LOGGER)		+= logger.o logger_interface.o
 obj-$(CONFIG_ANDROID_PERSISTENT_RAM)	+= persistent_ram.o
