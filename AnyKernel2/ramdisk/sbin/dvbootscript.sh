@@ -112,7 +112,7 @@ echo 0 > /proc/sys/kernel/randomize_va_space;
 echo 2884 > /proc/sys/vm/min_free_kbytes;
 
 # improve zram compression performance
-echo "lz4" > /sys/block/zram0/comp_algorithm;
+echo "lzo" > /sys/block/zram0/comp_algorithm;
 echo 2 > /sys/block/zram0/max_comp_streams;
 
 # increase swappiness and enable zram and ksm by default on SmittyV, otherwise disable
@@ -186,6 +186,7 @@ fi;
 
 # set up Synapse support
 /sbin/uci&
+[ -d /sdcard/Synapse/saved_profiles ] && $bb cp -f /res/synapse/profiles/* /sdcard/Synapse/saved_profiles/;
 
 # wait for systemui, move it to parent task group, move ksmd to background task group, and adjust systemui+kswapd priorities
 while sleep 1; do

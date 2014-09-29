@@ -46,11 +46,6 @@ cat << CTAG
         action:"generic /proc/sys/vm/dirty_writeback_centisecs"
     }},
     { SCheckBox:{
-        label:"Dynamic Dirty Writeback",
-        default:`cat /proc/sys/vm/dynamic_dirty_writeback`,
-        action:"generic /proc/sys/vm/dynamic_dirty_writeback"
-    }},
-    { SCheckBox:{
         label:"Highmem Is Dirtyable",
         default:`cat /proc/sys/vm/highmem_is_dirtyable`,
         action:"generic /proc/sys/vm/highmem_is_dirtyable"
