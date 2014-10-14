@@ -137,12 +137,18 @@ for i in /sys/block/*/queue; do
   echo 0 > $i/rotational;
 done;
 
-# adjust f2fs partition RAM thresholds to favor userdata
-if [ -e /sys/fs/f2fs ]; then
-  echo 5 > /sys/fs/f2fs/mmcblk0p10/ram_thresh;
-  echo 5 > /sys/fs/f2fs/mmcblk0p11/ram_thresh;
-  echo 25 > /sys/fs/f2fs/mmcblk0p12/ram_thresh;
+# adjust ext4 partition inode readahead
+for part in /sys/fs/ext4/mmcblk0p1*; do
+  echo 64 > $part/inode_readahead_blks;
+done;
+
+ # adjust f2fs partition RAM threshold to favor userdata and tweak garbage collection for smaller media
+if [ -e /sys/fs/f2fs/mmcblk0p12 ]; then
+  echo 20 > /sys/fs/f2fs/mmcblk0p12/ram_thresh;
 fi;
+for part in /sys/fs/f2fs/mmcblk0p1*; do
+  echo 2048 > $part/max_victim_search;
+done;
 
 # remount sysfs+sdcard with noatime,nodiratime since that's all they accept
 $bb mount -o remount,nosuid,nodev,noatime,nodiratime -t auto /;
@@ -159,7 +165,7 @@ done;
 # with nobarrier, inline_data, flush_merge, or active_logs=2 on f2fs for userdata via the fstab on older init binaries
 case `getprop ro.fs.data` in
   ext4) $bb mount -o remount,nosuid,nodev,noatime,nodiratime,barrier=0,noauto_da_alloc -t auto /data;;
-  f2fs) $bb mount -o remount,nosuid,nodev,noatime,nodiratime,inline_data,flush_merge,nobarrier,active_logs=2 -t auto /data;;
+  f2fs) $bb mount -o remount,nosuid,nodev,noatime,nodiratime,inline_data,nobarrier,active_logs=4 -t auto /data;;
 esac;
 
 # lmk tweaks for fewer empty background processes
