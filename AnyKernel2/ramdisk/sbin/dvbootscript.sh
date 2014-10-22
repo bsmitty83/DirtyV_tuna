@@ -52,7 +52,6 @@ echo 0 > /sys/module/earlysuspend/parameters/debug_mask;
 echo 0 > /sys/module/alarm/parameters/debug_mask;
 echo 0 > /sys/module/alarm_dev/parameters/debug_mask;
 echo 0 > /sys/module/binder/parameters/debug_mask;
-echo 0 > /sys/module/lowmemorykiller/parameters/debug_level;
 echo 0 > /sys/module/kernel/parameters/initcall_debug;
 echo 0 > /sys/module/xt_qtaguid/parameters/debug_mask;
 
@@ -177,18 +176,6 @@ while sleep 1; do
     [ `cat $lmk` != $minfree ] && echo $minfree > $lmk || exit;
   fi;
 done&
-
-# set up suspend_trim support
-trimhelper=/data/trimhelper;
-if [ -s /data/trimhelper ]; then
-  $bb sed -i "1s/.*/$($bb date +%s)/" $trimhelper;
-  $bb sed -i "4s/.*/0/" $trimhelper;
-else
-  $bb date +%s > $trimhelper;
-  echo 0 >> $trimhelper;
-  echo 0 >> $trimhelper;
-  echo 0 >> $trimhelper;
-fi;
 
 # set up Synapse support
 /sbin/uci&
