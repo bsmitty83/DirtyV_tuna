@@ -193,9 +193,10 @@ append_file init.tuna.rc "dvbootscript" init.tuna2;
 android_ver=$(mount /system; grep "^ro.build.version.release" /system/build.prop | cut -d= -f2; umount /system);
 case $android_ver in
   4.4*) cmdtmp=`cat $split_img/*-cmdline`;
-        if [[ "$cmdtmp" != *selinux=permissive* ]]; then
-          echo "androidboot.selinux=permissive $cmdtmp" > $split_img/*-cmdline;
-        fi;;
+        case "$cmdtmp" in
+          *selinux=permissive*) ;;
+          *) echo "androidboot.selinux=permissive $cmdtmp" > $split_img/*-cmdline;;
+        esac;;
 esac;
 
 write_boot;
